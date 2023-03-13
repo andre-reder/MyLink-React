@@ -5,6 +5,7 @@ import GlobalStyles from './assets/styles/global';
 
 import NotFound from './pages/NotFound';
 import defaultTheme from './assets/styles/themes/default';
+import Home from './pages/Home';
 
 function LoginRoute() {
   return (
@@ -12,6 +13,7 @@ function LoginRoute() {
       <GlobalStyles />
       <AnimatePresence mode="wait">
         <Routes>
+          <Route exact path="/" element={<Home />} />
           {/* <Route exact path="/" element={<Home />} />
           <Route exact path="/signup" element={<Result />} /> */}
 
