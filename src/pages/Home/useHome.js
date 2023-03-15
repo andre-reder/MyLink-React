@@ -10,9 +10,11 @@ import isEmailValid from '../../utils/isEmailValid';
 import formatCep from '../../utils/formatCep';
 import onlyNumbers from '../../utils/onlyNumbers';
 import homeService from '../../services/homeService';
+import { useAppContext } from '../../contexts/auth';
 
 export default function useHome() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isSendingData, setIsSendingData] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [logoSrc, setLogoSrc] = useState('');
   const [activeStep, setActiveStep] = useState(1);
@@ -29,7 +31,7 @@ export default function useHome() {
   const [complement, setComplement] = useState('');
 
   const [consultCode, setConsultCode] = useState('');
-  const [employeeCode, setEmployeeCode] = useState('');
+  const [, setEmployeeCode] = useState('');
 
   const [workplaces, setWorkplaces] = useState([]);
   const [selectedWorkplace, setSelectedWorkplace] = useState({});
@@ -48,6 +50,7 @@ export default function useHome() {
   } = useErrors();
 
   const navigate = useNavigate();
+  const { token } = useAppContext();
 
   const query = useQuery();
   const codEmpresa = query.get('codEmpresa');
@@ -92,15 +95,6 @@ export default function useHome() {
       setError({ field: 'name', message: 'Nome é obrigatório!' });
     } else {
       removeError('name');
-    }
-  }
-
-  function handleCpfChange(event) {
-    setCpf(formatCpf(event.target.value));
-    if (!event.target.value || !isCpfvalid(formatCpf(event.target.value))) {
-      setError({ field: 'cpf', message: 'Informe um cpf válido!' });
-    } else {
-      removeError('cpf');
     }
   }
 
@@ -178,10 +172,41 @@ export default function useHome() {
     }
   }, [removeError, setError]);
 
+  const handleCpfChange = useCallback(async (event) => {
+    try {
+      setCpf(formatCpf(event.target.value));
+      if (!event.target.value || !isCpfvalid(formatCpf(event.target.value))) {
+        setError({ field: 'cpf', message: 'CPF Inválido!' });
+        return;
+      }
+      if (formatCpf(event.target.value).length === 14) {
+        setIsVerifyingCpf(true);
+        const bodyCheckCpf = await homeService.checkCpf({
+          codEmpresa,
+          cpf: formatCpf(event.target.value),
+          token,
+        });
+        if (!bodyCheckCpf.liberado) {
+          setError({ field: 'cpf', message: 'Este CPF já foi utilizado!' });
+          setIsVerifyingCpf(false);
+          toast.error('Verificamos que já existe um resultado gerado para o CPF informado. Para acessar seu resultado, verifique seu e-mail');
+          return;
+        }
+        setIsVerifyingCpf(false);
+      }
+      removeError('cpf');
+      setIsVerifyingCpf(false);
+    } catch (error) {
+      toast.error(`Ocorreu um erro ao validar o CPF (${error})`);
+      setIsVerifyingCpf(false);
+    }
+  }, [codEmpresa, removeError, setError, token]);
+
   const checkIsCompanyHabilitated = useCallback(async () => {
     try {
       const isCompanyHabilitated = await homeService.checkIsCompanyHabilitated({
         codEmpresa,
+        token,
       });
       if (!isCompanyHabilitated.codigo) {
         toast.error(isCompanyHabilitated.msg);
@@ -199,12 +224,13 @@ export default function useHome() {
       toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
       setHasError(true);
     }
-  }, [codEmpresa]);
+  }, [codEmpresa, token]);
 
   const getWorkplaces = useCallback(async () => {
     try {
       const workplacesList = await homeService.getWorkplacesList({
         codEmpresa,
+        token,
       });
       if (!workplacesList.codigo) {
         toast.error(workplacesList.msg);
@@ -221,7 +247,7 @@ export default function useHome() {
       toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
       setHasError(true);
     }
-  }, [codEmpresa]);
+  }, [codEmpresa, token]);
 
   const loadHome = useCallback(async () => {
     try {
@@ -238,18 +264,23 @@ export default function useHome() {
     }
   }, [checkIsCompanyHabilitated, getWorkplaces]);
 
-  const checkResultStatus = useCallback(async () => {
+  const checkResultStatus = useCallback(async (consult, employee) => {
     try {
       const status = await homeService.checkResulStatus({
-        codConsulta: consultCode,
+        codConsulta: consult,
+        token,
       });
       if (!status.codigo) {
         toast.info(`Não conseguimos recuperar o status de processamento da sua consulta (${status.msg})`);
       }
       const statusMapActions = {
-        0: () => toast.info('Sua consulta foi gerada e está aguardando seu processamento ser iniciado'),
-        1: () => toast.info('Sua consulta está sendo processada. Em alguns segundos o resultado será gerado!'),
-        2: () => navigate(`/resultado?codFuncionario=${employeeCode}&codConsulta=${consultCode}&logo=${logoSrc || false}`),
+        0: () => toast.info('Sua consulta foi gerada e está aguardando seu processamento ser iniciado', {
+          icon: '🕓',
+        }),
+        1: () => toast.info('Sua consulta está sendo processada. Em alguns segundos o resultado será gerado!', {
+          icon: '🕓',
+        }),
+        2: () => navigate(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`),
         3: () => setErrorAtResultGeneration(true),
         4: () => setConsultExpired(true),
       };
@@ -257,20 +288,22 @@ export default function useHome() {
     } catch (error) {
       toast.error(`Não conseguimos checar o status de processamento do seu resultado (${error})`);
     }
-  }, [consultCode, employeeCode, logoSrc, navigate]);
+  }, [logoSrc, navigate, token]);
 
-  const startResultStatusInterval = useCallback(() => {
+  const startResultStatusInterval = useCallback((consult, employee) => {
     const id = setInterval(() => {
-      checkResultStatus();
-    }, 4000);
+      checkResultStatus(consult, employee);
+    }, 5000);
     setIntervalId(id);
   }, [checkResultStatus]);
 
   const calculateRoute = useCallback(async () => {
     try {
-      const bodySentToCalculate = toast.promise(await homeService.calculateRoute({
+      setIsSendingData(true);
+      const bodySentToCalculate = await toast.promise(homeService.calculateRoute({
         codEmpresa,
         codLocTrab: selectedWorkplace.value,
+        token,
         reqBody: JSON.stringify({
           cpf,
           nome: name,
@@ -284,8 +317,9 @@ export default function useHome() {
           ufF: uf,
         }),
       }), {
-        pending: 'Estamos enviando seus dados para roteirização',
-        success: 'Estamos gerando seu resultado!',
+        pending: 'Estamos enviando seus dados para a roteirização.',
+        success: 'Seus dados foram enviados com sucesso!',
+        error: 'Não foi possível enviar seus dados para a roteirização',
       });
       const hasBeenSentSuccessfully = bodySentToCalculate.codigo;
       if (!hasBeenSentSuccessfully) {
@@ -296,15 +330,17 @@ export default function useHome() {
       nextStep();
       setConsultCode(bodySentToCalculate.codConsulta);
       setEmployeeCode(bodySentToCalculate.codFuncionario);
-      startResultStatusInterval();
+      startResultStatusInterval(bodySentToCalculate.codConsulta, bodySentToCalculate.codFuncionario);
     } catch (error) {
       toast.error(`Houve um erro ao enviar seus dados para roteirização. Por favor, tente novamente ${error}`);
       prevStep();
+    } finally {
+      setIsSendingData(false);
     }
-  }, [cep, city, codEmpresa, complement, cpf, district, email, name, number, selectedWorkplace.value, startResultStatusInterval, streetName, uf]);
+  }, [cep, city, codEmpresa, complement, cpf, district, email, name, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
 
   useEffect(() => {
-    if (hasCodEmpresaQuery) {
+    if (hasCodEmpresaQuery && !intervalId) {
       loadHome();
     }
 
@@ -351,5 +387,6 @@ export default function useHome() {
     errorAtResultGeneration,
     consultExpired,
     consultCode,
+    isSendingData,
   };
 }
