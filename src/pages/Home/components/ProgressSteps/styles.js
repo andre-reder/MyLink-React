@@ -2,9 +2,13 @@ import styled from 'styled-components';
 
 export const MainContainer = styled.div`
   width: 100%;
-  max-width: 400px;
+  max-width: 330px;
   margin: 0 auto;
   padding: 0 16px;
+
+  @media(max-width: 315px){
+    margin-bottom: 15px;
+  }
 `;
 
 export const StepContainer = styled.div`
@@ -60,14 +64,25 @@ export const StepCount = styled.span`
 
 export const StepsLabelContainer = styled.div`
   position: absolute;
-  top: 40px;
+  top: 35px;
   left: 50%;
   transform: translate(-50%, -50%);
+
+  @media(max-width: 315px){
+    white-space: normal;
+    text-align: center;
+    top: 50px;
+  }
 `;
 
 export const StepLabel = styled.span`
   font-size: 12px;
   white-space: nowrap;
+
+  @media(max-width: 315px){
+    white-space: normal;
+    text-align: center;
+  }
 `;
 
 export const CheckMark = styled.div`
