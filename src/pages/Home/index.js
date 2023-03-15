@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import { Link } from 'react-router-dom';
 import { ButtonsContainer, Container, FormCard } from './styles';
 
 import Header from './components/Header';
@@ -47,17 +48,17 @@ export default function Home() {
     hasError,
     setSelectedWorkplace,
     selectedWorkplace,
-    // setIsVerifyingCpf,
     hasCodEmpresaQuery,
     calculateRoute,
-    // errorAtResultGeneration,
-    // consultExpired,
+    errorAtResultGeneration,
+    consultExpired,
     consultCode,
+    isSendingData,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0;
 
-  const isFormSuccessfullyLoaded = (!isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !hasError);
+  const isFormSuccessfullyLoaded = (!isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !hasError && !errorAtResultGeneration && !consultExpired);
 
   return (
     <Transitions>
@@ -127,7 +128,7 @@ export default function Home() {
               <ButtonsContainer>
                 {activeStep !== 1 && (
                 <OpacityAnimation>
-                  <Button onClick={prevStep}>
+                  <Button onClick={prevStep} disabled={(activeStep === 3 && isSendingData)}>
                     Voltar
                   </Button>
                 </OpacityAnimation>
@@ -135,7 +136,7 @@ export default function Home() {
                 <OpacityAnimation>
                   <Button
                     onClick={activeStep === 3 ? calculateRoute : nextStep}
-                    disabled={!canAdvanceStep}
+                    disabled={(!canAdvanceStep || (activeStep === 3 && isSendingData))}
                   >
                     {activeStep === 3 ? 'Roteirizar' : 'Próximo'}
                   </Button>
@@ -147,7 +148,7 @@ export default function Home() {
         )}
       </Container>
 
-      {companyNotAllowed && !isLoading && hasCodEmpresaQuery && (
+      {companyNotAllowed && !isLoading && hasCodEmpresaQuery && !errorAtResultGeneration && !consultExpired && (
         <NoData
           icon="sad"
           label={(
@@ -165,7 +166,7 @@ export default function Home() {
         />
       )}
 
-      {!hasCodEmpresaQuery && !isLoading && (
+      {!hasCodEmpresaQuery && !isLoading && !errorAtResultGeneration && !consultExpired && (
         <NoData
           icon="sad"
           label={(
@@ -176,7 +177,7 @@ export default function Home() {
         />
       )}
 
-      {!hasWorkplaces && !isLoading && !companyNotAllowed && (
+      {!hasWorkplaces && !isLoading && !companyNotAllowed && !errorAtResultGeneration && !consultExpired && (
         <NoData
           icon="sad"
           label={(
@@ -187,7 +188,7 @@ export default function Home() {
         />
       )}
 
-      {hasError && !isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && (
+      {hasError && !isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && !consultExpired && (
         <NoData
           icon="sad"
           label={(
@@ -196,6 +197,41 @@ export default function Home() {
             </>
 )}
         />
+      )}
+
+      {!isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && errorAtResultGeneration && !consultExpired && (
+        <NoData
+          icon="sad"
+          label={(
+            <>
+              Não conseguimos encontrar nenhum resultado, mas não se preocupe!.
+              Baixe a carta abaixo, preencha e envie para o RH ou anexe
+              no sistema de admissão on-line que está utilizando.
+
+              <strong>Dica:</strong>
+              {' '}
+              Antes de enviar a carta, baixe e salve-a em seu smartphone ou computador e depois abra este documento para preencher e assinar pelo seu navegador ou pelo ADOBE ACROBAT!
+              Isso é mais simples!
+
+              <Link to="/files/Modelo de Carta de Opção de VT (fora abrangência)- CAPTA MOBILIDADE (2).pdf" target="_blank" download>
+                Baixar Carta
+              </Link>
+            </>
+)}
+        />
+      )}
+
+      {!isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && consultExpired && (
+      <NoData
+        icon="sad"
+        label={(
+          <>
+            Essa consulta já expirou.
+
+            Por favor, verifique se você não possui uma consulta mais recente, ou gere uma nova!
+          </>
+)}
+      />
       )}
     </Transitions>
   );

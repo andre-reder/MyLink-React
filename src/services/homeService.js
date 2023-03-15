@@ -7,29 +7,57 @@ class AuthService {
   }
 
   async checkIsCompanyHabilitated({
+    token,
     codEmpresa,
   }) {
-    return this.httpClient.get(`/RTL_Acesso?appCode=2&codEmpresa=${codEmpresa}`);
+    return this.httpClient.get({
+      path: `/RTL_Acesso?appCode=2&codEmpresa=${codEmpresa}`,
+      authorization: token,
+    });
   }
 
   async getWorkplacesList({
+    token,
     codEmpresa,
   }) {
-    return this.httpClient.get(`/RTL_ListaLT?codEmpresa=${codEmpresa}`);
+    return this.httpClient.get({
+      path: `/RTL_ListaLT?codEmpresa=${codEmpresa}`,
+      authorization: token,
+    });
   }
 
   async calculateRoute({
+    token,
     codEmpresa,
     codLocTrab,
     reqBody,
   }) {
-    return this.httpClient.post(`/RTL_Roteirizar?appCode=2&codEmpresa=${codEmpresa}&codLocTrab=${codLocTrab}`, reqBody);
+    return this.httpClient.post({
+      path: `/RTL_Roteirizar?appCode=2&codEmpresa=${codEmpresa}&codLocTrab=${codLocTrab}`,
+      reqBody,
+      authorization: token,
+    });
   }
 
   async checkResulStatus({
+    token,
     codConsulta,
   }) {
-    return this.httpClient.post(`/RTL_VerificaProc?codConsulta=${codConsulta}`);
+    return this.httpClient.get({
+      path: `/RTL_VerificaProc?codConsulta=${codConsulta}`,
+      authorization: token,
+    });
+  }
+
+  async checkCpf({
+    cpf,
+    codEmpresa,
+    token,
+  }) {
+    return this.httpClient.post({
+      path: `/RTL_VerificaProc?cpf=${cpf}&codEmpresa=${codEmpresa}`,
+      authorization: token,
+    });
   }
 }
 

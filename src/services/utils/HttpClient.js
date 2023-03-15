@@ -4,8 +4,13 @@ class HttpClient {
     this.baseURL = baseURL;
   }
 
-  async get(path) {
-    const response = await fetch(`${this.baseURL}${path}`);
+  async get({ path, authorization }) {
+    const fetchConfig = {
+      headers: {
+        authorization: `Bearer ${authorization}`,
+      },
+    };
+    const response = await fetch(`${this.baseURL}${path}`, fetchConfig);
 
     const contentType = response.headers.get('Content-Type');
 
@@ -23,7 +28,9 @@ class HttpClient {
     );
   }
 
-  async post(path, reqBody, contentType) {
+  async post({
+    path, reqBody, contentType, authorization,
+  }) {
     const formData = new FormData();
     if (contentType === 'multipart/form-data') {
       reqBody.forEach((keyValue) => {
@@ -35,15 +42,22 @@ class HttpClient {
       (contentType === 'multipart/form-data') ? {
         method: 'POST',
         body: formData,
+        headers: {
+          authorization: `Bearer ${authorization}`,
+        },
       } : {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
+          authorization: `Bearer ${authorization}`,
         },
         body: `${reqBody}`,
       }
     ) : {
       method: 'POST',
+      headers: {
+        authorization: `Bearer ${authorization}`,
+      },
     };
 
     const response = await fetch(`${this.baseURL}${path}`, fetchConfig);
@@ -64,7 +78,9 @@ class HttpClient {
     );
   }
 
-  async put(path, reqBody, contentType) {
+  async put({
+    path, reqBody, contentType, authorization,
+  }) {
     const formData = new FormData();
     if (contentType === 'multipart/form-data') {
       reqBody.forEach((keyValue) => {
@@ -76,10 +92,14 @@ class HttpClient {
       (contentType === 'multipart/form-data') ? {
         method: 'PUT',
         body: formData,
+        headers: {
+          authorization: `Bearer ${authorization}`,
+        },
       } : {
         method: 'PUT',
         headers: {
           'content-type': 'application/json',
+          authorization: `Bearer ${authorization}`,
         },
         body: `${reqBody}`,
       }
@@ -105,7 +125,9 @@ class HttpClient {
     );
   }
 
-  async patch(path, reqBody, contentType) {
+  async patch({
+    path, reqBody, contentType, authorization,
+  }) {
     const formData = new FormData();
     if (contentType === 'multipart/form-data') {
       reqBody.forEach((keyValue) => {
@@ -117,10 +139,14 @@ class HttpClient {
       (contentType === 'multipart/form-data') ? {
         method: 'PATCH',
         body: formData,
+        headers: {
+          authorization: `Bearer ${authorization}`,
+        },
       } : {
         method: 'PATCH',
         headers: {
           'content-type': 'application/json',
+          authorization: `Bearer ${authorization}`,
         },
         body: `${reqBody}`,
       }
@@ -146,15 +172,19 @@ class HttpClient {
     );
   }
 
-  async delete(path, reqBody) {
+  async delete(path, reqBody, authorization) {
     const fetchConfig = reqBody ? {
       method: 'DELETE',
       headers: {
         'content-type': 'application/json',
+        authorization: `Bearer ${authorization}`,
       },
       body: `${reqBody}`,
     } : {
       method: 'DELETE',
+      headers: {
+        authorization: `Bearer ${authorization}`,
+      },
     };
     const response = await fetch(`${this.baseURL}${path}`, fetchConfig);
 
