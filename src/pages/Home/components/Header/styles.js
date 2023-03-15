@@ -5,7 +5,7 @@ export const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /* margin-bottom: 40px; */
+  margin-bottom: 16px;
   width: 100%;
 
  > h1 {
@@ -14,7 +14,7 @@ export const Container = styled.div`
     margin-bottom: 12px;
 
     > strong {
-      font-weight: 600;
+      font-weight: 900;
       font-size: 36px;
       margin-right: 2px;
     }

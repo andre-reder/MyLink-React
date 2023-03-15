@@ -9,7 +9,7 @@ export default {
     primary: {
       lighter: '#bbedfb',
       light: '#4aafff',
-      main: '#006FE6',
+      main: '#3e94c5',
       dark: '#00011e',
     },
 
