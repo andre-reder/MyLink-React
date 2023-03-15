@@ -31,7 +31,7 @@ export default function useHome() {
   const [complement, setComplement] = useState('');
 
   const [consultCode, setConsultCode] = useState('');
-  const [employeeCode, setEmployeeCode] = useState('');
+  const [, setEmployeeCode] = useState('');
 
   const [workplaces, setWorkplaces] = useState([]);
   const [selectedWorkplace, setSelectedWorkplace] = useState({});
