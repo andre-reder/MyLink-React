@@ -84,7 +84,7 @@ export default function useResult() {
         0: () => toast.info('Resultado gerado! Por favor, selecione uma das opções para prosseguir'),
         1: () => toast.info('Seu resultado já foi aceito e implantado!'),
         2: () => toast.info('Você já optou pela não utilização do VT'),
-        3: () => toast('Por favor, aguarde enquanto nossa ajusta seu resultado conforme solicitado', {
+        3: () => toast('Por favor, aguarde enquanto nossa equipe ajusta seu resultado conforme solicitado', {
           icon: '🕓',
         }),
         4: () => toast.success('Sua solicitação de ajuste foi respondida. Este é seu novo resultado!'),

@@ -367,11 +367,13 @@ export default function useHome() {
     }
 
     if (hasCodEmpresaQuery && hasConsultCodeQuery && hasConsultCodeQuery && !intervalId) {
+      setActiveStep(4);
       startResultStatusInterval(consultCodeQuery, employeeCodeQuery);
     }
 
     return () => {
       clearInterval(intervalId);
+      setIsLoading(false);
     };
   }, [consultCodeQuery, employeeCodeQuery, hasCodEmpresaQuery, hasConsultCodeQuery, intervalId, loadHome, startResultStatusInterval]);
 
