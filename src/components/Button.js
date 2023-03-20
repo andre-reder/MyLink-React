@@ -2,7 +2,8 @@ import styled, { css } from 'styled-components';
 
 export default styled.button`
   height: ${({ small }) => (small ? '36px' : '40px')};
-  width: 150px;
+  max-width: 150px;
+  min-width: 120px;
   padding: ${({ small }) => (small ? '0 8px' : '0 12px')};
   border: none;
   background: ${({ theme, background }) => (background || theme.colors.primary.main)};
