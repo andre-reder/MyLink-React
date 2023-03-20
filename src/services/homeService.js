@@ -1,7 +1,7 @@
 import HttpClient from './utils/HttpClient';
 import { pathName } from '../pathName';
 
-class AuthService {
+class HomeService {
   constructor() {
     this.httpClient = new HttpClient(pathName);
   }
@@ -61,4 +61,4 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+export default new HomeService();

@@ -1,20 +1,28 @@
 import styled, { css } from 'styled-components';
 
 export default styled.button`
-  height: ${({ small }) => (small ? '36px' : '48px')};
-  width: 120px;
+  height: ${({ small }) => (small ? '36px' : '40px')};
+  width: 150px;
   padding: ${({ small }) => (small ? '0 8px' : '0 12px')};
   border: none;
-  background: ${({ theme }) => theme.colors.primary.main};
+  background: ${({ theme, background }) => (background || theme.colors.primary.main)};
   font-size: ${({ small }) => (small ? '14px' : '16px')};
   box-shadow: 8px 4px 10px rgba(0, 0, 0, 0.04);
   font-weight: bold;
   color: ${({ theme }) => theme.colors.lighterBackground};
   border-radius: 8px;
-  transition: background 0.2s ease-in;
+  transition: all 0.2s ease-in;
+
+  @media(max-width: 800px){
+    width: 110px;
+    height: 36px;
+    padding: 0 2px;
+    font-size: 14px;
+  }
 
   &:hover {
-    background: ${({ theme }) => theme.colors.primary.light};
+    /* background: ${({ theme }) => theme.colors.primary.light}; */
+    opacity: 0.8;
   }
 
   &:active {
