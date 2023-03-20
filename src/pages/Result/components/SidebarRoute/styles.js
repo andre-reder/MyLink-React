@@ -40,7 +40,9 @@ export const LogoContainer = styled.header`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    /* height: 100%; */
     width: 75%;
+    aspect-ratio: 5/2;
+    object-fit: contain;
   }
 `;

@@ -31,6 +31,8 @@ export const Container = styled.div`
 
     img {
       width: 100px;
+      aspect-ratio: 4/2;
+      object-fit: contain;
       margin-left: 10px;
       margin-right: 10px;
     }

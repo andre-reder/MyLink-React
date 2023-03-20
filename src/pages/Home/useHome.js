@@ -282,21 +282,24 @@ export default function useHome() {
         toast.info(`Não conseguimos recuperar o status de processamento da sua consulta (${status.msg})`);
       }
       const statusMapActions = {
-        0: () => toast.update(toastStatusId, {
+        0: () => toast.update(toastStatusId.current, {
           render: 'Sua consulta foi gerada e está aguardando seu processamento ser iniciado',
           icon: '🕓',
           type: toast.TYPE.INFO,
           className: 'rotateY animated',
           autoClose: false,
         }),
-        1: () => toast.update(toastStatusId, {
+        1: () => toast.update(toastStatusId.current, {
           render: 'Sua consulta está sendo processada, e em alguns segundos o seu resultado será gerado!',
-          icon: '🕓',
+          icon: '🚌',
           type: toast.TYPE.INFO,
           className: 'rotateY animated',
           autoClose: false,
         }),
-        2: () => navigate(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`),
+        2: () => {
+          toast.dismiss(toastStatusId.current);
+          navigate(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`);
+        },
         3: () => setErrorAtResultGeneration(true),
         4: () => setConsultExpired(true),
       };
