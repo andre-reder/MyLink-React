@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
-import { useCallback, useEffect, useState } from 'react';
+import {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useErrors from '../../hooks/useErrors';
@@ -55,6 +57,10 @@ export default function useHome() {
   const query = useQuery();
   const codEmpresa = query.get('codEmpresa');
   const hasCodEmpresaQuery = query.has('codEmpresa');
+  // const hasEmployeeCodeQuery = query.has('codFuncionario');
+  const hasConsultCodeQuery = query.has('codConsulta');
+  const employeeCodeQuery = query.get('codFuncionario');
+  const consultCodeQuery = query.get('codConsulta');
 
   const isFirstStepValid = (cpf && name && email && !errors.some((err) => (
     err.field === 'name' || err.field === 'cpf' || err.field === 'email'
@@ -88,6 +94,8 @@ export default function useHome() {
       step: 4,
     },
   ];
+
+  const toastStatusId = useRef(null);
 
   function handleNameChange(event) {
     setName(event.target.value);
@@ -274,11 +282,19 @@ export default function useHome() {
         toast.info(`Não conseguimos recuperar o status de processamento da sua consulta (${status.msg})`);
       }
       const statusMapActions = {
-        0: () => toast.info('Sua consulta foi gerada e está aguardando seu processamento ser iniciado', {
+        0: () => toast.update(toastStatusId, {
+          render: 'Sua consulta foi gerada e está aguardando seu processamento ser iniciado',
           icon: '🕓',
+          type: toast.TYPE.INFO,
+          className: 'rotateY animated',
+          autoClose: false,
         }),
-        1: () => toast.info('Sua consulta está sendo processada. Em alguns segundos o resultado será gerado!', {
+        1: () => toast.update(toastStatusId, {
+          render: 'Sua consulta está sendo processada, e em alguns segundos o seu resultado será gerado!',
           icon: '🕓',
+          type: toast.TYPE.INFO,
+          className: 'rotateY animated',
+          autoClose: false,
         }),
         2: () => navigate(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`),
         3: () => setErrorAtResultGeneration(true),
@@ -321,6 +337,9 @@ export default function useHome() {
         success: 'Seus dados foram enviados com sucesso!',
         error: 'Não foi possível enviar seus dados para a roteirização',
       });
+      toastStatusId.current = toast('Seus dados foram enviados com sucesso!', {
+        autoClose: false,
+      });
       const hasBeenSentSuccessfully = bodySentToCalculate.codigo;
       if (!hasBeenSentSuccessfully) {
         toast.error(`Houve um erro ao enviar seus dados para roteirização. Por favor, tente novamente ${bodySentToCalculate.msg}`);
@@ -344,10 +363,14 @@ export default function useHome() {
       loadHome();
     }
 
+    if (hasCodEmpresaQuery && hasConsultCodeQuery && hasConsultCodeQuery && !intervalId) {
+      startResultStatusInterval(consultCodeQuery, employeeCodeQuery);
+    }
+
     return () => {
       clearInterval(intervalId);
     };
-  }, [hasCodEmpresaQuery, intervalId, loadHome]);
+  }, [consultCodeQuery, employeeCodeQuery, hasCodEmpresaQuery, hasConsultCodeQuery, intervalId, loadHome, startResultStatusInterval]);
 
   return {
     steps,
