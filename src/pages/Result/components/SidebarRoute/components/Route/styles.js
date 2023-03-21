@@ -71,6 +71,8 @@ export const StepTitle = styled.div`
 
 export const StepDescription = styled.div`
   font-size: 0.9em;
+  max-height: 108px;
+  overflow: auto;
 
   .transport {
     text-transform: uppercase;

@@ -50,11 +50,19 @@ export default function Route({
 
                 <StepDescription>
                   {routeData.tipoTransp === 'Caminhada'
-                    ? `De ${routeData.origemCaminhada} até ${routeData.destinoCaminhada}`
+                    ? (
+                      <div>
+                        {`De ${routeData.origemCaminhada} até ${routeData.destinoCaminhada}`}
+                      </div>
+                    )
                     : (
                       <>
-                        <div className="transport">{`${routeData.operadora} ${routeData.letreiroTransporte}`}</div>
-                        <div>{`Em ${routeData.embarque} e viaje até ${routeData.desembarque}`}</div>
+                        <div className="transport">
+                          {`${routeData.operadora} ${routeData.letreiroTransporte}`}
+                        </div>
+                        <div>
+                          {`Em ${routeData.embarque} e viaje até ${routeData.desembarque}`}
+                        </div>
                       </>
                     )}
                 </StepDescription>
@@ -89,11 +97,19 @@ export default function Route({
 
               <StepDescription>
                 {routeData.tipoTransp === 'Caminhada'
-                  ? `De ${routeData.origemCaminhada} até ${routeData.destinoCaminhada}`
+                  ? (
+                    <div>
+                      {`De ${routeData.origemCaminhada} até ${routeData.destinoCaminhada}`}
+                    </div>
+                  )
                   : (
                     <>
-                      <div className="transport">{`${routeData.operadora} ${routeData.letreiroTransporte}`}</div>
-                      <div>{`Em ${routeData.embarque} e viaje até ${routeData.desembarque}`}</div>
+                      <div className="transport">
+                        {`${routeData.operadora} ${routeData.letreiroTransporte}`}
+                      </div>
+                      <div>
+                        {`Em ${routeData.embarque} e viaje até ${routeData.desembarque}`}
+                      </div>
                     </>
                   )}
               </StepDescription>

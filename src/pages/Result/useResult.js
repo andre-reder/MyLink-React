@@ -23,6 +23,8 @@ export default function useResult() {
   const [refuseModalShow, setRefuseModalShow] = useState(false);
   const [acceptModalShow, setAcceptModalShow] = useState(false);
 
+  const [remainingAdjustmentChars, setRemainingAdjustmentChars] = useState(300);
+
   const { token } = useAppContext();
   const query = useQuery();
   const consultCode = query.get('codConsulta');
@@ -101,6 +103,7 @@ export default function useResult() {
   const loadResult = useCallback(async () => {
     try {
       setIsLoading(true);
+      setHasError(false);
       await Promise.all([
         getResult(),
         checkResultStatus(),
@@ -177,6 +180,7 @@ export default function useResult() {
 
   function handleAdjustmentReasonChange(event) {
     setAdjustmentReason(event.target.value);
+    setRemainingAdjustmentChars(300 - event.target.value.length);
   }
 
   useEffect(() => {
@@ -209,5 +213,6 @@ export default function useResult() {
     setAcceptModalShow,
     refuseModalShow,
     handleResultAction,
+    remainingAdjustmentChars,
   };
 }

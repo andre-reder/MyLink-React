@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Iframe from 'react-iframe';
 import Button from '../../components/Button';
 import Loader from '../../components/Loader';
 import MyModal from '../../components/Modal';
@@ -56,6 +55,7 @@ export default function Result() {
     setAcceptModalShow,
     refuseModalShow,
     handleResultAction,
+    remainingAdjustmentChars,
   } = useResult();
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -145,6 +145,11 @@ export default function Result() {
                   placeholder="Explique aqui qual seria a rota ideal para você para que ajustemos"
                   onChange={handleAdjustmentReasonChange}
                 />
+                <small>
+                  {remainingAdjustmentChars}
+                  {' '}
+                  Caracteres restantes
+                </small>
               </>
           )}
             onClose={() => setAdjustmentModalShow(false)}
@@ -225,11 +230,13 @@ export default function Result() {
           />
 
           <MapContainer>
-            <Iframe
-              url={`https://mapas.captatec.com.br/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height - 16}&w=${width - 16}&z=12`}
+            <iframe
+              title="Mapa"
+              src={`https://mapas.captatec.com.br/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
               width={width}
               height={height}
-              position="fixed"
+              marginWidth={0}
+              marginHeight={0}
             />
           </MapContainer>
 

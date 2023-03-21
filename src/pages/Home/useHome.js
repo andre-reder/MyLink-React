@@ -227,6 +227,7 @@ export default function useHome() {
       setCompanyNotAllowed(false);
       toast.success('Olá! Seja bem-vindo ao My-Link. Aqui você realizará sua roteirização de Vale Transporte.', {
         icon: '👋',
+        toastId: 'welcomeToast',
       });
     } catch (error) {
       toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
@@ -286,14 +287,12 @@ export default function useHome() {
           render: 'Sua consulta foi gerada e está aguardando seu processamento ser iniciado',
           icon: '🕓',
           type: toast.TYPE.INFO,
-          className: 'rotateY animated',
           autoClose: false,
         }),
         1: () => toast.update(toastStatusId.current, {
           render: 'Sua consulta está sendo processada, e em alguns segundos o seu resultado será gerado!',
           icon: '🚌',
           type: toast.TYPE.INFO,
-          className: 'rotateY animated',
           autoClose: false,
         }),
         2: () => {
@@ -340,15 +339,16 @@ export default function useHome() {
         success: 'Seus dados foram enviados com sucesso!',
         error: 'Não foi possível enviar seus dados para a roteirização',
       });
-      toastStatusId.current = toast('Seus dados foram enviados com sucesso!', {
-        autoClose: false,
-      });
       const hasBeenSentSuccessfully = bodySentToCalculate.codigo;
       if (!hasBeenSentSuccessfully) {
         toast.error(`Houve um erro ao enviar seus dados para roteirização. Por favor, tente novamente ${bodySentToCalculate.msg}`);
         prevStep();
         return;
       }
+      toastStatusId.current = toast('Só mais um pouco! Vamos atualizar aqui pra você o status do processamento do seu resultdao.', {
+        autoClose: false,
+        icon: '😁',
+      });
       nextStep();
       setConsultCode(bodySentToCalculate.codConsulta);
       setEmployeeCode(bodySentToCalculate.codFuncionario);
