@@ -120,6 +120,7 @@ export const Actions = styled.div`
   @media(max-width: 800px){
     gap: 4px;
     padding: 4px;
+    margin-bottom: 80px;
   }
 `;
 
@@ -128,9 +129,10 @@ export const MapContainer = styled.div`
   z-index: 0;
   overflow: hidden;
   position: fixed;
-  @media(max-width: 800px){
+  /* left: 8px; */
+  /* @media(max-width: 800px){
     margin-left: -10px;
-  }
+  } */
 `;
 
 export const TicketGroup = styled.div`
