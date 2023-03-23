@@ -48,6 +48,17 @@ class ResultService {
       authorization: token,
     });
   }
+
+  async sendSignature({
+    codFuncionario,
+    reqBody,
+  }) {
+    return this.httpClient.post({
+      path: `/RTL_ArquivosDocs?codFuncionario=${codFuncionario}&TipoArquivo=7`,
+      contentType: 'multipart/form-data',
+      reqBody,
+    });
+  }
 }
 
 export default new ResultService();

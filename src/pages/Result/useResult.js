@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+/* eslint-disable max-len */
+import {
+  useCallback, useEffect, useState,
+} from 'react';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../../contexts/auth';
 import { useQuery } from '../../hooks/useQuery';
@@ -24,6 +27,9 @@ export default function useResult() {
   const [acceptModalShow, setAcceptModalShow] = useState(false);
 
   const [remainingAdjustmentChars, setRemainingAdjustmentChars] = useState(300);
+
+  const [isRefuseButtonDisabled, setIsRefuseButtonDisabled] = useState(true);
+  const [isAcceptButtonDisabled, setIsAcceptButtonDisabled] = useState(true);
 
   const { token } = useAppContext();
   const query = useQuery();
@@ -83,13 +89,22 @@ export default function useResult() {
         4: 'answered',
       };
       const codStatusActionsMap = {
-        0: () => toast.info('Resultado gerado! Por favor, selecione uma das opções para prosseguir'),
-        1: () => toast.info('Seu resultado já foi aceito e implantado!'),
-        2: () => toast.info('Você já optou pela não utilização do VT'),
+        0: () => toast.info('Resultado gerado! Por favor, selecione uma das opções para prosseguir', {
+          toastId: 'resultDone',
+        }),
+        1: () => toast.info('Seu resultado já foi aceito e implantado!', {
+          toastId: 'resultImplanted',
+        }),
+        2: () => toast.info('Você já optou pela não utilização do VT', {
+          toastId: 'resultImplanted',
+        }),
         3: () => toast('Por favor, aguarde enquanto nossa equipe ajusta seu resultado conforme solicitado', {
           icon: '🕓',
+          toastId: 'resultWaiting',
         }),
-        4: () => toast.success('Sua solicitação de ajuste foi respondida. Este é seu novo resultado!'),
+        4: () => toast.success('Sua solicitação de ajuste foi respondida. Este é seu novo resultado!', {
+          toastId: 'adjustmentAnswered',
+        }),
       };
       codStatusActionsMap[bodyResultStatus.codStatus]();
       setResultStatus(codStatusMap[bodyResultStatus.codStatus]);
@@ -140,10 +155,10 @@ export default function useResult() {
     }
   }, [adjustmentReason, consultCode, token]);
 
-  const handleResultAction = useCallback(async (action) => {
+  const handleResultAction = useCallback(async (action, canvas) => {
     try {
-      setRefuseModalShow(false);
-      setAcceptModalShow(false);
+      // setRefuseModalShow(false);
+      // setAcceptModalShow(false);
       setIsSomeActionLoading(true);
       const bodyAction = await resultService.handleResultAction({
         token,
@@ -161,7 +176,20 @@ export default function useResult() {
         return;
       }
       setResultStatus(action === 'refuse' ? 'refused' : 'accepted');
+
+      // eslint-disable-next-line no-promise-executor-return
+      const file = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      const bodySendSignature = await resultService.sendSignature({
+        codFuncionario: employeeCode,
+        reqBody: [{ key: 'file', value: file }],
+      });
+      if (!bodySendSignature.codigo) {
+        toast.error(`Não foi possível registrar a assinatura, mas não se preocupe! O seu resultado foi implantado normalmente. (${bodySendSignature.msg})`);
+      }
+
       toast.success(action === 'refuse' ? 'A opção pela não utilização do VT foi registrada com sucesso!' : 'Resultado aceito e implantado com sucesso!');
+      setAcceptModalShow(false);
+      setRefuseModalShow(false);
     } catch (error) {
       toast.error(`Não foi possível ${action === 'refuse' ? 'recusar o benefício' : 'implantar o resultado'}. Por favor, tente novamente (${error})`);
       if (action === 'refuse') {
@@ -172,7 +200,7 @@ export default function useResult() {
     } finally {
       setIsSomeActionLoading(false);
     }
-  }, [allowPdfDownload, consultCode, token]);
+  }, [allowPdfDownload, consultCode, employeeCode, token]);
 
   function handleTryAgain() {
     loadResult();
@@ -214,5 +242,9 @@ export default function useResult() {
     refuseModalShow,
     handleResultAction,
     remainingAdjustmentChars,
+    isRefuseButtonDisabled,
+    setIsRefuseButtonDisabled,
+    isAcceptButtonDisabled,
+    setIsAcceptButtonDisabled,
   };
 }

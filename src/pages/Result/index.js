@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable max-len */
+import { useEffect, useRef, useState } from 'react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import SignatureCanvas from 'react-signature-canvas';
+
 import Button from '../../components/Button';
 import Loader from '../../components/Loader';
 import MyModal from '../../components/Modal';
@@ -14,11 +18,14 @@ import { IconContainer } from './components/SidebarRoute/components/Route/styles
 import Timecard from './components/TimeCard';
 import {
   AcceptContainer,
+  AcceptModalContainer,
   Actions,
   Container,
   Display,
   Header,
   MapContainer,
+  RefuseModalContainer,
+  SingatureContainer,
   TicketDescription,
   TicketGroup,
   TicketInfo,
@@ -56,6 +63,10 @@ export default function Result() {
     refuseModalShow,
     handleResultAction,
     remainingAdjustmentChars,
+    isRefuseButtonDisabled,
+    setIsRefuseButtonDisabled,
+    isAcceptButtonDisabled,
+    setIsAcceptButtonDisabled,
   } = useResult();
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -69,6 +80,12 @@ export default function Result() {
   const totalVt = tickets.reduce((acc, cur) => (
     acc + cur.totVt
   ), 0);
+
+  const sigCanvas = useRef(null);
+  const sigRefuseCanvas = useRef(null);
+
+  const acceptCanvas = sigCanvas.current?.getTrimmedCanvas();
+  const refuseCanvas = sigRefuseCanvas.current?.getTrimmedCanvas();
 
   // eslint-disable-next-line max-len
   // const anyButtonToRender = (((resultStatus === 'accepted' || resultStatus === 'refused') && !allowPdfDownload) || resultStatus === 'waitingAnswer' || exceededPrice);
@@ -164,67 +181,112 @@ export default function Result() {
             closeButtonLabel="Cancelar"
             actionButtonLabel="Confirmar recusa do VT"
             modalBody={(
-              <>
-                Caso prefira não optar pelo benefício do vale-transporte, basta clicar no botão
-                {' '}
-                <strong>Confirmar recusa do VT</strong>
-                {' '}
-                logo abaixo!
-              </>
+              <RefuseModalContainer>
+                <div>
+                  Caso prefira não optar pelo benefício do vale-transporte, basta assinar e clicar no botão
+                  {' '}
+                  <strong>Confirmar recusa do VT</strong>
+                  {' '}
+                  logo abaixo!
+                </div>
+
+                <SingatureContainer>
+                  <span>Assine aqui</span>
+                  <SignatureCanvas
+                    penColor="black"
+                    canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }}
+                    ref={sigRefuseCanvas}
+                    onEnd={() => setIsRefuseButtonDisabled(false)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sigRefuseCanvas.current.clear();
+                      setIsRefuseButtonDisabled(true);
+                    }}
+                  >
+                    Refazer
+                  </button>
+                </SingatureContainer>
+              </RefuseModalContainer>
           )}
-            onClose={() => setRefuseModalShow(false)}
-            onAction={() => handleResultAction('refuse')}
+            onClose={() => { setRefuseModalShow(false); setIsRefuseButtonDisabled(true); }}
+            onAction={() => handleResultAction('refuse', refuseCanvas)}
+            isActionButtonDisabled={isRefuseButtonDisabled}
             show={refuseModalShow}
             type="deleteAction"
           />
 
           <MyModal
-            title="Revise seus bilhetes"
+            title="Assine e revise seus bilhetes"
             closeButtonLabel="Cancelar"
             actionButtonLabel="Confirmar Resultado"
-            size="md"
+            size="lg"
             modalBody={(
-              <AcceptContainer>
-                {tickets.map((ticket) => (
-                  <TicketGroup key={`${ticket.codOperadora}${ticket.codVT}${ticket.qtdVt}${ticket.tipoTransp}`}>
-                    <IconContainer logo>
-                      <img src={ticket.linkOPLogo} alt="opLogo" className="noBg" />
-                    </IconContainer>
+              <AcceptModalContainer>
+                <AcceptContainer>
+                  {tickets.map((ticket) => (
+                    <TicketGroup key={`${ticket.codOperadora}${ticket.codVT}${ticket.qtdVt}${ticket.tipoTransp}`}>
+                      <IconContainer logo>
+                        <img src={ticket.linkOPLogo} alt="opLogo" className="noBg" />
+                      </IconContainer>
 
-                    <TicketInfo>
-                      <Title>
-                        {ticket.qtdVt}
-                        x
-                        {' '}
-                        {ticket.operadora}
-                      </Title>
+                      <TicketInfo>
+                        <Title>
+                          {ticket.qtdVt}
+                          x
+                          {' '}
+                          {ticket.operadora}
+                        </Title>
 
-                      <TicketDescription>
-                        {formatCurrency(ticket.tarifaVt)}
-                        {' '}
-                        -
-                        {' '}
-                        {ticket.tipoTransp}
-                      </TicketDescription>
+                        <TicketDescription>
+                          {formatCurrency(ticket.tarifaVt)}
+                          {' '}
+                          -
+                          {' '}
+                          {ticket.tipoTransp}
+                        </TicketDescription>
 
-                      <TicketTotal>
-                        Total de
-                        {' '}
-                        {formatCurrency(ticket.totVt)}
-                      </TicketTotal>
-                    </TicketInfo>
-                  </TicketGroup>
-                ))}
+                        <TicketTotal>
+                          Total de
+                          {' '}
+                          {formatCurrency(ticket.totVt)}
+                        </TicketTotal>
+                      </TicketInfo>
+                    </TicketGroup>
+                  ))}
 
-                <TotalContainer>
-                  VT Total por dia
-                  {' '}
-                  {formatCurrency(totalVt)}
-                </TotalContainer>
-              </AcceptContainer>
+                  <TotalContainer>
+                    VT Total por dia
+                    {' '}
+                    {formatCurrency(totalVt)}
+                  </TotalContainer>
+                </AcceptContainer>
+
+                <SingatureContainer>
+                  <span>Assine aqui</span>
+                  <SignatureCanvas
+                    penColor="black"
+                    canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }}
+                    ref={sigCanvas}
+                    onEnd={() => setIsAcceptButtonDisabled(false)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sigCanvas.current.clear();
+                      setIsAcceptButtonDisabled(true);
+                    }}
+                  >
+                    Refazer
+                  </button>
+                </SingatureContainer>
+
+              </AcceptModalContainer>
           )}
-            onClose={() => setAcceptModalShow(false)}
-            onAction={() => handleResultAction('accept')}
+            onClose={() => { setAcceptModalShow(false); setIsAcceptButtonDisabled(true); }}
+            onAction={() => handleResultAction('accept', acceptCanvas)}
+            isActionButtonDisabled={isAcceptButtonDisabled}
             show={acceptModalShow}
             type="activateAction"
           />
