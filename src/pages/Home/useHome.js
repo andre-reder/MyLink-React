@@ -299,14 +299,22 @@ export default function useHome() {
           toast.dismiss(toastStatusId.current);
           navigate(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`);
         },
-        3: () => setErrorAtResultGeneration(true),
-        4: () => setConsultExpired(true),
+        3: () => {
+          setErrorAtResultGeneration(true);
+          clearInterval(intervalId);
+          toast.dismiss(toastStatusId.current);
+        },
+        4: () => {
+          setConsultExpired(true);
+          clearInterval(intervalId);
+          toast.dismiss(toastStatusId.current);
+        },
       };
       statusMapActions[status.statusProcessamento.codSta]();
     } catch (error) {
       toast.error(`Não conseguimos checar o status de processamento do seu resultado (${error})`);
     }
-  }, [logoSrc, navigate, token]);
+  }, [intervalId, logoSrc, navigate, token]);
 
   const startResultStatusInterval = useCallback((consult, employee) => {
     const id = setInterval(() => {

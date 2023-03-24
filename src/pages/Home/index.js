@@ -208,10 +208,14 @@ export default function Home() {
               Baixe a carta abaixo, preencha e envie para o RH ou anexe
               no sistema de admissão on-line que está utilizando.
 
+              <br />
+
               <strong>Dica:</strong>
               {' '}
               Antes de enviar a carta, baixe e salve-a em seu smartphone ou computador e depois abra este documento para preencher e assinar pelo seu navegador ou pelo ADOBE ACROBAT!
               Isso é mais simples!
+
+              <br />
 
               <Link to="/files/Modelo de Carta de Opção de VT (fora abrangência)- CAPTA MOBILIDADE (2).pdf" target="_blank" download>
                 Baixar Carta
