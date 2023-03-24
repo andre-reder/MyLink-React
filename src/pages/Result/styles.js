@@ -120,7 +120,7 @@ export const Actions = styled.div`
   @media(max-width: 800px){
     gap: 4px;
     padding: 4px;
-    margin-bottom: 80px;
+    margin-bottom: 95px;
   }
 `;
 

@@ -41,6 +41,25 @@ export const NoDataContainer = styled.div`
       }
     }
 
+    a {
+      color: ${({ theme }) => theme.colors.primary.main};
+      text-decoration: none;
+      font-weight: bold;
+      border: 2px solid ${({ theme }) => theme.colors.primary.main};
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: all 0.2s ease-in;
+      background: ${({ theme }) => theme.colors.background};
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+
+      &:hover {
+        background: ${({ theme }) => theme.colors.primary.main};
+        color: ${({ theme }) => theme.colors.lighterBackground};
+      }
+    }
+
     img {
       width: 24px;
     }
