@@ -60,6 +60,16 @@ export default function Home() {
 
   const isFormSuccessfullyLoaded = (!isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !hasError && !errorAtResultGeneration && !consultExpired);
 
+  const invalidUrl = !hasCodEmpresaQuery && !isLoading && !errorAtResultGeneration && !consultExpired;
+
+  const workplacesNotFound = !hasWorkplaces && !isLoading && !companyNotAllowed && !errorAtResultGeneration && !consultExpired;
+
+  const unexpectedError = hasError && !isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && !consultExpired;
+
+  const resultNotFound = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && errorAtResultGeneration && !consultExpired;
+
+  const consultExpire = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && consultExpired;
+
   return (
     <Transitions>
       <Loader isLoading={isLoading} />
@@ -166,7 +176,7 @@ export default function Home() {
         />
       )}
 
-      {!hasCodEmpresaQuery && !isLoading && !errorAtResultGeneration && !consultExpired && (
+      {invalidUrl && (
         <NoData
           icon="sad"
           label={(
@@ -177,7 +187,7 @@ export default function Home() {
         />
       )}
 
-      {!hasWorkplaces && !isLoading && !companyNotAllowed && !errorAtResultGeneration && !consultExpired && (
+      {workplacesNotFound && (
         <NoData
           icon="sad"
           label={(
@@ -188,7 +198,7 @@ export default function Home() {
         />
       )}
 
-      {hasError && !isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && !consultExpired && (
+      {unexpectedError && (
         <NoData
           icon="sad"
           label={(
@@ -199,7 +209,7 @@ export default function Home() {
         />
       )}
 
-      {!isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && errorAtResultGeneration && !consultExpired && (
+      {resultNotFound && (
         <NoData
           icon="sad"
           label={(
@@ -225,7 +235,7 @@ export default function Home() {
         />
       )}
 
-      {!isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && consultExpired && (
+      {consultExpire && (
       <NoData
         icon="sad"
         label={(
