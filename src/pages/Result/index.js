@@ -71,6 +71,11 @@ export default function Result() {
 
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
+  const [acceptCanvas, setAcceptCanvas] = useState(null);
+  const [refuseCanvas, setRefuseCanvas] = useState(null);
+
+  const sigCanvas = useRef(null);
+  const sigRefuseCanvas = useRef(null);
 
   const standardRender = (resultStatus === 'nothingDone' || resultStatus === 'answered') && allowPdfDownload && !exceededPrice;
   const standardRenderBlockPdf = (resultStatus === 'nothingDone' || resultStatus === 'answered') && !allowPdfDownload && !exceededPrice;
@@ -80,12 +85,6 @@ export default function Result() {
   const totalVt = tickets.reduce((acc, cur) => (
     acc + cur.totVt
   ), 0);
-
-  const sigCanvas = useRef(null);
-  const sigRefuseCanvas = useRef(null);
-
-  const acceptCanvas = sigCanvas.current?.getTrimmedCanvas();
-  const refuseCanvas = sigRefuseCanvas.current?.getTrimmedCanvas();
 
   // eslint-disable-next-line max-len
   // const anyButtonToRender = (((resultStatus === 'accepted' || resultStatus === 'refused') && !allowPdfDownload) || resultStatus === 'waitingAnswer' || exceededPrice);
@@ -196,7 +195,10 @@ export default function Result() {
                     penColor="black"
                     canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }}
                     ref={sigRefuseCanvas}
-                    onEnd={() => setIsRefuseButtonDisabled(false)}
+                    onEnd={() => {
+                      setIsRefuseButtonDisabled(false);
+                      setRefuseCanvas(sigRefuseCanvas.current?.getTrimmedCanvas());
+                    }}
                   />
                   <button
                     type="button"
@@ -269,7 +271,10 @@ export default function Result() {
                     penColor="black"
                     canvasProps={{ width: 500, height: 200, className: 'sigCanvas' }}
                     ref={sigCanvas}
-                    onEnd={() => setIsAcceptButtonDisabled(false)}
+                    onEnd={() => {
+                      setIsAcceptButtonDisabled(false);
+                      setAcceptCanvas(sigCanvas.current?.getTrimmedCanvas());
+                    }}
                   />
                   <button
                     type="button"

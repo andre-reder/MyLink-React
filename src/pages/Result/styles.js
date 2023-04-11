@@ -195,19 +195,27 @@ export const AcceptModalContainer = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  /* gap: 16px; */
-  max-height: 400px;
+  max-height: 600px;
   overflow: auto;
+  overflow-x: hidden;
+
+  @media(max-width: 800px){
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+  }
 `;
 
 export const RefuseModalContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  /* max-height: 400px;
-  overflow: auto; */
+  justify-content: flex-start;
+  gap: 8px;
+  max-height: 600px;
+  overflow: auto;
+  overflow-x: hidden;
 `;
 
 export const SingatureContainer = styled.div`
@@ -218,7 +226,10 @@ export const SingatureContainer = styled.div`
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 8px 0px;
+  padding: 8px;
+  @media(max-width: 500px){
+    width: 100%;
+  }
 
   button {
     color: ${({ theme, selected }) => (selected ? theme.colors.lighterBackground : theme.colors.primary.main)};

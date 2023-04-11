@@ -157,8 +157,6 @@ export default function useResult() {
 
   const handleResultAction = useCallback(async (action, canvas) => {
     try {
-      // setRefuseModalShow(false);
-      // setAcceptModalShow(false);
       setIsSomeActionLoading(true);
       const bodyAction = await resultService.handleResultAction({
         token,
@@ -177,8 +175,17 @@ export default function useResult() {
       }
       setResultStatus(action === 'refuse' ? 'refused' : 'accepted');
 
-      // eslint-disable-next-line no-promise-executor-return
-      const file = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      const dataUrl = canvas.toDataURL('image/png');
+      const byteString = atob(dataUrl.split(',')[1]);
+      const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      const blob = new Blob([ab], { type: mimeString });
+      const file = new File([blob], 'image.png', { type: 'image/png' });
+
       const bodySendSignature = await resultService.sendSignature({
         codFuncionario: employeeCode,
         reqBody: [{ key: 'file', value: file }],
