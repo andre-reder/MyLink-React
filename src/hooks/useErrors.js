@@ -4,9 +4,20 @@ export default function useErrors() {
   const [errors, setErrors] = useState([]);
 
   function setError({ field, message }) {
-    const errorAlreadyExists = errors.find((error) => error.field === field);
+    const errorFieldAlreadyExists = errors.find((error) => error.field === field);
 
-    if (errorAlreadyExists) {
+    if (errorFieldAlreadyExists) {
+      const isSameMessage = errorFieldAlreadyExists.message === message;
+      if (isSameMessage) {
+        return;
+      }
+      setErrors((prevState) => {
+        const errorFieldIndex = prevState.findIndex((error) => error.field === field);
+        const errorsCloned = JSON.parse(JSON.stringify(prevState));
+        errorsCloned[errorFieldIndex] = { field, message };
+
+        return errorsCloned;
+      });
       return;
     }
 
