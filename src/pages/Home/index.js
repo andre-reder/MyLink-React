@@ -54,6 +54,9 @@ export default function Home() {
     consultExpired,
     consultCode,
     isSendingData,
+    isManualFill,
+    handleStreetnameChange,
+    handleDistrictChange,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0;
@@ -113,6 +116,9 @@ export default function Home() {
                   handleNumberChange={handleNumberChange}
                   handleComplementChange={handleComplementChange}
                   handleCepChange={handleCepChange}
+                  isManualFill={isManualFill}
+                  handleStreetnameChange={handleStreetnameChange}
+                  handleDistrictChange={handleDistrictChange}
                   getErrorMessageByFieldName={getErrorMessageByFieldName}
                 />
               </OpacityAnimation>

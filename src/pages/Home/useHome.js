@@ -31,6 +31,7 @@ export default function useHome() {
   const [uf, setUf] = useState('');
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
+  const [isManualFill, setIsManualFill] = useState(false);
 
   const [consultCode, setConsultCode] = useState('');
   const [, setEmployeeCode] = useState('');
@@ -128,6 +129,24 @@ export default function useHome() {
     setComplement(event.target.value);
   }
 
+  function handleStreetnameChange(event) {
+    setStreetName(event.target.value);
+    if (!event.target.value) {
+      setError({ field: 'streetname', message: 'Logradouro é obrigatório!' });
+    } else {
+      removeError('streetname');
+    }
+  }
+
+  function handleDistrictChange(event) {
+    setDistrict(event.target.value);
+    if (!event.target.value) {
+      setError({ field: 'district', message: 'Bairro é obrigatório!' });
+    } else {
+      removeError('district');
+    }
+  }
+
   const nextStep = () => {
     setActiveStep((prevState) => prevState + 1);
   };
@@ -144,6 +163,7 @@ export default function useHome() {
       }
       if (formatCep(event.target.value).length === 9) {
         setIsGettingCepData(true);
+        setIsManualFill(false);
         const response = await fetch(`https://viacep.com.br/ws/${event.target.value}/json/`);
         const cepInfo = await response.json();
         if (cepInfo.erro) {
@@ -161,6 +181,12 @@ export default function useHome() {
         setDistrict(cepInfo.bairro);
         setCity(cepInfo.localidade);
         setUf(cepInfo.uf);
+        if (!cepInfo.bairro || !cepInfo.logradouro) {
+          setIsManualFill(true);
+          setStreetName('');
+          setDistrict('');
+          toast.warn('Insira manualmente o nome do bairro e do logradouro, pois o CEP fornecido abrange toda a cidade. Certifique-se de digitar corretamente para evitar erros.');
+        }
         setIsGettingCepData(false);
       }
       if (formatCep(event.target.value).length !== 9) {
@@ -258,21 +284,6 @@ export default function useHome() {
     }
   }, [codEmpresa, token]);
 
-  const loadHome = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      await Promise.all([
-        checkIsCompanyHabilitated(),
-        getWorkplaces(),
-      ]);
-    } catch (error) {
-      toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [checkIsCompanyHabilitated, getWorkplaces]);
-
   const checkResultStatus = useCallback(async (consult, employee) => {
     try {
       const status = await homeService.checkResulStatus({
@@ -317,11 +328,31 @@ export default function useHome() {
   }, [intervalId, logoSrc, navigate, token]);
 
   const startResultStatusInterval = useCallback((consult, employee) => {
+    checkResultStatus(consult, employee);
     const id = setInterval(() => {
       checkResultStatus(consult, employee);
     }, 5000);
     setIntervalId(id);
   }, [checkResultStatus]);
+
+  const loadHome = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await Promise.all([
+        checkIsCompanyHabilitated(),
+        getWorkplaces(),
+      ]);
+      if (hasCodEmpresaQuery && hasConsultCodeQuery && hasConsultCodeQuery && !intervalId) {
+        setActiveStep(4);
+        startResultStatusInterval(consultCodeQuery, employeeCodeQuery);
+      }
+    } catch (error) {
+      toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [checkIsCompanyHabilitated, consultCodeQuery, employeeCodeQuery, getWorkplaces, hasCodEmpresaQuery, hasConsultCodeQuery, intervalId, startResultStatusInterval]);
 
   const calculateRoute = useCallback(async () => {
     try {
@@ -374,16 +405,11 @@ export default function useHome() {
       loadHome();
     }
 
-    if (hasCodEmpresaQuery && hasConsultCodeQuery && hasConsultCodeQuery && !intervalId) {
-      setActiveStep(4);
-      startResultStatusInterval(consultCodeQuery, employeeCodeQuery);
-    }
-
     return () => {
       clearInterval(intervalId);
       setIsLoading(false);
     };
-  }, [consultCodeQuery, employeeCodeQuery, hasCodEmpresaQuery, hasConsultCodeQuery, intervalId, loadHome, startResultStatusInterval]);
+  }, [hasCodEmpresaQuery, intervalId, loadHome]);
 
   return {
     steps,
@@ -424,5 +450,8 @@ export default function useHome() {
     consultExpired,
     consultCode,
     isSendingData,
+    isManualFill,
+    handleStreetnameChange,
+    handleDistrictChange,
   };
 }
