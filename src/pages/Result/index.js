@@ -13,6 +13,7 @@ import formatCurrency from '../../utils/formatCurrency';
 import ConsultCard from './components/ConsultCard';
 import DistanceCard from './components/DistanceCard';
 import PriceCard from './components/PriceCard';
+import CaptaHeader from '../../components/Header';
 import SidebarRoute from './components/SidebarRoute';
 import { IconContainer } from './components/SidebarRoute/components/Route/styles';
 import Timecard from './components/TimeCard';
@@ -34,6 +35,7 @@ import {
   TotalContainer,
 } from './styles';
 import useResult from './useResult';
+import { domain } from '../../enviromentVariables';
 
 export default function Result() {
   const {
@@ -67,6 +69,7 @@ export default function Result() {
     setIsRefuseButtonDisabled,
     isAcceptButtonDisabled,
     setIsAcceptButtonDisabled,
+    isBkConsultAndNotOptimized,
   } = useResult();
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -101,7 +104,7 @@ export default function Result() {
   return (
     <Transitions>
       <Loader isLoading={isLoading || isSomeActionLoading} />
-      {!hasError && !isLoading && (
+      {!hasError && !isLoading && !isBkConsultAndNotOptimized && (
         <Container>
           <SidebarRoute
             setView={setView}
@@ -134,9 +137,9 @@ export default function Result() {
               </Actions>
             )}
 
-            {downloadPdfRender && (
+            {downloadPdfRender && !isBkConsultAndNotOptimized && (
               <Actions>
-                <a href={`https://rels.captatec.com.br/GeradorCarta?Consulta=${consultCode}`} download target="_blank" rel="noreferrer">
+                <a href={`https://rels.${domain}/GeradorCarta?Consulta=${consultCode}`} download target="_blank" rel="noreferrer">
                   <Button background="#428bca">Baixar Carta</Button>
                 </a>
                 {resultStatus === 'accepted' && (
@@ -299,7 +302,7 @@ export default function Result() {
           <MapContainer>
             <iframe
               title="Mapa"
-              src={`https://mapas.captatec.com.br/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
+              src={`https://mapas.${domain}/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
               width={width}
               height={height}
               marginWidth={0}
@@ -310,16 +313,35 @@ export default function Result() {
         </Container>
       )}
 
-      {hasError && !isLoading && (
-        <NoData
-          icon="sad"
-          label={(
-            <>
-              Ocorreu um erro ao recuperar seu resultado.
-              <button type="button" onClick={handleTryAgain}>Tentar Novamente</button>
-            </>
+      {!hasError && !isLoading && isBkConsultAndNotOptimized && (
+        <>
+          <CaptaHeader />
+          <NoData
+            icon="ok"
+            label={(
+              <>
+                Percebemos que o vale-transporte que utiliza atualmente não sofrerá alterações.
+                Está tudo OK!
+                Obrigado!
+              </>
 )}
-        />
+          />
+        </>
+      )}
+
+      {hasError && !isLoading && (
+        <>
+          <CaptaHeader />
+          <NoData
+            icon="sad"
+            label={(
+              <>
+                Ocorreu um erro ao recuperar seu resultado.
+                <button type="button" onClick={handleTryAgain}>Tentar Novamente</button>
+              </>
+)}
+          />
+        </>
       )}
     </Transitions>
   );
