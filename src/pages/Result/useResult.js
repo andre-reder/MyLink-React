@@ -31,6 +31,8 @@ export default function useResult() {
   const [isRefuseButtonDisabled, setIsRefuseButtonDisabled] = useState(true);
   const [isAcceptButtonDisabled, setIsAcceptButtonDisabled] = useState(true);
 
+  const [isBkConsultAndNotOptimized, setIsBkConsultAndNotOptimized] = useState(false);
+
   const { token } = useAppContext();
   const query = useQuery();
   const consultCode = query.get('codConsulta');
@@ -47,6 +49,10 @@ export default function useResult() {
       if (!result.codigo) {
         toast.error(`Não foi possível carregar seu resultado. Por favor, tente novamente (${result.msg})`);
         setHasError(true);
+        return;
+      }
+      if (result.dadosFuncionario.codEmpresa === 24175 && result.dadosConsulta.statusRot === 69) {
+        setIsBkConsultAndNotOptimized(true);
         return;
       }
       setTotalPrice(formatCurrency(result.dadosConsulta.valorVtTotal));
@@ -253,5 +259,6 @@ export default function useResult() {
     setIsRefuseButtonDisabled,
     isAcceptButtonDisabled,
     setIsAcceptButtonDisabled,
+    isBkConsultAndNotOptimized,
   };
 }
