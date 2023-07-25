@@ -139,7 +139,7 @@ export default function Result() {
 
             {downloadPdfRender && !isBkConsultAndNotOptimized && (
               <Actions>
-                <a href={`https://rels.${domain}/GeradorCarta?Consulta=${consultCode}`} download target="_blank" rel="noreferrer">
+                <a href={`https://rels${domain}/GeradorCarta?Consulta=${consultCode}`} download target="_blank" rel="noreferrer">
                   <Button background="#428bca">Baixar Carta</Button>
                 </a>
                 {resultStatus === 'accepted' && (
@@ -302,7 +302,7 @@ export default function Result() {
           <MapContainer>
             <iframe
               title="Mapa"
-              src={`https://mapas.${domain}/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
+              src={`https://mapas${domain}/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
               width={width}
               height={height}
               marginWidth={0}
