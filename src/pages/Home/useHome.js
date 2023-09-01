@@ -48,6 +48,10 @@ export default function useHome() {
   const [errorAtResultGeneration, setErrorAtResultGeneration] = useState(false);
   const [consultExpired, setConsultExpired] = useState(false);
 
+  const [currentCep, setCurrentCep] = useState(null);
+  const [mustSendAddressProof, setMustSendAddressProof] = useState(false);
+  const [addressProof, setAddressProof] = useState('');
+
   const {
     setError, removeError, getErrorMessageByFieldName, errors,
   } = useErrors();
@@ -68,7 +72,7 @@ export default function useHome() {
   )));
   const isSecondStepValid = (cep && streetName && number && district && city && uf && !errors.some((err) => (
     err.field === 'cep'
-  )));
+  )) && ((!!addressProof && !!currentCep) || !currentCep));
   const isThirdStepValid = (selectedWorkplace.value && errors.length === 0);
   const stepsValidationMap = {
     1: isFirstStepValid,
@@ -181,6 +185,7 @@ export default function useHome() {
         setDistrict(cepInfo.bairro);
         setCity(cepInfo.localidade);
         setUf(cepInfo.uf);
+
         if (!cepInfo.bairro || !cepInfo.logradouro) {
           setIsManualFill(true);
           setStreetName('');
@@ -200,11 +205,18 @@ export default function useHome() {
       }
       removeError('cep');
       setIsGettingCepData(false);
+
+      if (!!currentCep && currentCep !== formatCep(event.target.value)) {
+        setMustSendAddressProof(true);
+        toast.warn('Identificamos que seu CEP foi alterado. Por favor, envie seu comprovante de residência atualizado para prosseguir, ou verifique se digitou seu CEP corretamente');
+      } else {
+        setMustSendAddressProof(false);
+      }
     } catch (error) {
       toast.error(`Ocorreu um erro ao buscar o CEP (${error})`);
       setIsGettingCepData(false);
     }
-  }, [removeError, setError]);
+  }, [currentCep, removeError, setError]);
 
   const handleCpfChange = useCallback(async (event) => {
     try {
@@ -220,6 +232,7 @@ export default function useHome() {
           cpf: formatCpf(event.target.value),
           token,
         });
+        setCurrentCep(bodyCheckCpf.cepAtual);
         if (!bodyCheckCpf.liberado) {
           setError({ field: 'cpf', message: 'Este CPF já foi utilizado!' });
           setIsVerifyingCpf(false);
@@ -367,7 +380,7 @@ export default function useHome() {
           email,
           cepF: cep,
           logradouroF: streetName,
-          numF: number,
+          numF: Number(number),
           complementoF: complement,
           bairroF: district,
           cidadeF: city,
@@ -388,6 +401,16 @@ export default function useHome() {
         autoClose: false,
         icon: '😁',
       });
+      const employeeCode = bodySentToCalculate.codFuncionario;
+      if (mustSendAddressProof) {
+        const bodySendSignature = await homeService.sendAddressProof({
+          codFuncionario: employeeCode,
+          reqBody: [{ key: 'file', value: addressProof }],
+        });
+        if (!bodySendSignature.codigo) {
+          toast.warn(`Não foi possível enviar seu comprovante, mas não se preocupe! O seu resultado continua sendo gerado normalmente. (${bodySendSignature.msg})`);
+        }
+      }
       nextStep();
       setConsultCode(bodySentToCalculate.codConsulta);
       setEmployeeCode(bodySentToCalculate.codFuncionario);
@@ -398,7 +421,7 @@ export default function useHome() {
     } finally {
       setIsSendingData(false);
     }
-  }, [cep, city, codEmpresa, complement, cpf, district, email, name, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
+  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, mustSendAddressProof, name, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
 
   useEffect(() => {
     if (hasCodEmpresaQuery && !intervalId) {
@@ -454,5 +477,8 @@ export default function useHome() {
     isManualFill,
     handleStreetnameChange,
     handleDistrictChange,
+    mustSendAddressProof,
+    addressProof,
+    setAddressProof,
   };
 }

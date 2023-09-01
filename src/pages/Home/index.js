@@ -58,6 +58,9 @@ export default function Home() {
     handleStreetnameChange,
     handleDistrictChange,
     codEmpresa,
+    mustSendAddressProof,
+    addressProof,
+    setAddressProof,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0;
@@ -123,6 +126,9 @@ export default function Home() {
                   handleStreetnameChange={handleStreetnameChange}
                   handleDistrictChange={handleDistrictChange}
                   getErrorMessageByFieldName={getErrorMessageByFieldName}
+                  mustSendAddressProof={mustSendAddressProof}
+                  addressProof={addressProof}
+                  setAddressProof={setAddressProof}
                 />
               </OpacityAnimation>
               )}

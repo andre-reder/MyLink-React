@@ -104,7 +104,7 @@ export default function Result() {
   return (
     <Transitions>
       <Loader isLoading={isLoading || isSomeActionLoading} />
-      {!hasError && !isLoading && !isBkConsultAndNotOptimized && (
+      {!hasError && !isLoading && !isBkConsultAndNotOptimized && !exceededPrice && (
         <Container>
           <SidebarRoute
             setView={setView}
@@ -327,6 +327,21 @@ export default function Result() {
 )}
           />
         </>
+      )}
+
+      {!hasError && !isLoading && exceededPrice && (
+      <>
+        <CaptaHeader />
+        <NoData
+          icon="sad"
+          label={(
+            <>
+              Ocorreu uma inconscistência.
+              Por favor, procure o RH de sua empresa para mais informações.
+            </>
+)}
+        />
+      </>
       )}
 
       {hasError && !isLoading && (
