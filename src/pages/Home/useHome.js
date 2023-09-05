@@ -72,7 +72,7 @@ export default function useHome() {
   )));
   const isSecondStepValid = (cep && streetName && number && district && city && uf && !errors.some((err) => (
     err.field === 'cep'
-  )) && ((!!addressProof && !!currentCep) || !currentCep));
+  )) && ((!!addressProof && mustSendAddressProof) || !currentCep || !mustSendAddressProof));
   const isThirdStepValid = (selectedWorkplace.value && errors.length === 0);
   const stepsValidationMap = {
     1: isFirstStepValid,

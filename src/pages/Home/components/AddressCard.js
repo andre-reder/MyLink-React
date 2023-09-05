@@ -83,20 +83,41 @@ export default function AddressCard({
           value={district}
         />
       </FormGroup>
-      <FormGroup isLoading={isGettinCepData}>
-        <Input
-          disabled
-          placeholder="Cidade"
-          value={city}
-        />
-      </FormGroup>
-      <FormGroup isLoading={isGettinCepData}>
-        <Input
-          disabled
-          placeholder="UF"
-          value={uf}
-        />
-      </FormGroup>
+      {mustSendAddressProof ? (
+        <AsideFormGroup>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="Cidade"
+              value={city}
+            />
+          </FormGroup>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="UF"
+              value={uf}
+            />
+          </FormGroup>
+        </AsideFormGroup>
+      ) : (
+        <>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="Cidade"
+              value={city}
+            />
+          </FormGroup>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="UF"
+              value={uf}
+            />
+          </FormGroup>
+        </>
+      )}
 
       {mustSendAddressProof && (
         <FormGroup>
