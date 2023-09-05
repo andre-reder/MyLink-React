@@ -57,6 +57,10 @@ export default function Home() {
     isManualFill,
     handleStreetnameChange,
     handleDistrictChange,
+    codEmpresa,
+    mustSendAddressProof,
+    addressProof,
+    setAddressProof,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0;
@@ -72,6 +76,8 @@ export default function Home() {
   const resultNotFound = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && errorAtResultGeneration && !consultExpired;
 
   const consultExpire = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && consultExpired;
+
+  const isCompanyKonecta = codEmpresa == 43769;
 
   return (
     <Transitions>
@@ -120,6 +126,9 @@ export default function Home() {
                   handleStreetnameChange={handleStreetnameChange}
                   handleDistrictChange={handleDistrictChange}
                   getErrorMessageByFieldName={getErrorMessageByFieldName}
+                  mustSendAddressProof={mustSendAddressProof}
+                  addressProof={addressProof}
+                  setAddressProof={setAddressProof}
                 />
               </OpacityAnimation>
               )}
@@ -233,9 +242,11 @@ export default function Home() {
 
               <br />
 
-              <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
-                Baixar Carta
-              </Link>
+              {!isCompanyKonecta && (
+                <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
+                  Baixar Carta
+                </Link>
+              )}
             </>
 )}
         />

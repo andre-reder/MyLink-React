@@ -1,8 +1,11 @@
+import { useRef } from 'react';
 import PropTypes from 'prop-types';
 
+import { toast } from 'react-toastify';
 import FormGroup from '../../../components/FormGroup';
 import Input from '../../../components/Input';
 import { AsideFormGroup } from '../styles';
+import { SecondaryButton } from '../../../components/SecondaryButton';
 
 export default function AddressCard({
   cep,
@@ -20,7 +23,15 @@ export default function AddressCard({
   handleStreetnameChange,
   handleDistrictChange,
   getErrorMessageByFieldName,
+  mustSendAddressProof,
+  addressProof,
+  setAddressProof,
 }) {
+  const hiddenFileInput = useRef(null);
+  const handleClick = () => {
+    hiddenFileInput.current?.click();
+  };
+
   return (
     <>
       <div className="title">
@@ -72,25 +83,67 @@ export default function AddressCard({
           value={district}
         />
       </FormGroup>
-      <FormGroup isLoading={isGettinCepData}>
-        <Input
-          disabled
-          placeholder="Cidade"
-          value={city}
-        />
-      </FormGroup>
-      <FormGroup isLoading={isGettinCepData}>
-        <Input
-          disabled
-          placeholder="UF"
-          value={uf}
-        />
-      </FormGroup>
+      {mustSendAddressProof ? (
+        <AsideFormGroup>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="Cidade"
+              value={city}
+            />
+          </FormGroup>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="UF"
+              value={uf}
+            />
+          </FormGroup>
+        </AsideFormGroup>
+      ) : (
+        <>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="Cidade"
+              value={city}
+            />
+          </FormGroup>
+          <FormGroup isLoading={isGettinCepData}>
+            <Input
+              disabled
+              placeholder="UF"
+              value={uf}
+            />
+          </FormGroup>
+        </>
+      )}
+
+      {mustSendAddressProof && (
+        <FormGroup>
+          <SecondaryButton onClick={handleClick}>
+            {addressProof ? `Alterar comprovante (${addressProof?.name})` : 'Escolher comprovante'}
+          </SecondaryButton>
+
+          <input
+            type="file"
+            accept=".jpg, .pdf"
+            onChange={(event) => {
+              setAddressProof(event.target.files[0]);
+              toast.success(`Comprovante enviado com sucesso. Arquivo escolhido: ${event.target.files[0].name}`);
+            }}
+            style={{ display: 'none' }}
+            ref={hiddenFileInput}
+          />
+
+        </FormGroup>
+      )}
     </>
   );
 }
 
 AddressCard.propTypes = {
+  mustSendAddressProof: PropTypes.bool.isRequired,
   isGettinCepData: PropTypes.bool.isRequired,
   getErrorMessageByFieldName: PropTypes.func.isRequired,
   cep: PropTypes.string.isRequired,
@@ -106,4 +159,6 @@ AddressCard.propTypes = {
   isManualFill: PropTypes.bool.isRequired,
   handleStreetnameChange: PropTypes.func.isRequired,
   handleDistrictChange: PropTypes.func.isRequired,
+  addressProof: PropTypes.string.isRequired,
+  setAddressProof: PropTypes.func.isRequired,
 };

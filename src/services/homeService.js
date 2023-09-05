@@ -59,6 +59,17 @@ class HomeService {
       authorization: token,
     });
   }
+
+  async sendAddressProof({
+    codFuncionario,
+    reqBody,
+  }) {
+    return this.httpClient.post({
+      path: `/RTL_ArquivosDocs?codFuncionario=${codFuncionario}&TipoArquivo=6`,
+      contentType: 'multipart/form-data',
+      reqBody,
+    });
+  }
 }
 
 export default new HomeService();
