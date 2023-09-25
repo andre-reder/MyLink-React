@@ -1,8 +1,14 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
 width: 100%;
 margin-top: 16px;
+${({ centered }) => centered && css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`};
 /* & + & {
     margin-top: 16px;
   } */

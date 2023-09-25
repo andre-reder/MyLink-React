@@ -14,6 +14,7 @@ import Loader from '../../components/Loader';
 import NoData from '../../components/NoData';
 import CompanySelectionCard from './components/CompanySelectionCard';
 import WaitingCard from './components/WaitingCard';
+import HighSalaryCard from './components/HighSalaryCard';
 
 export default function Home() {
   const {
@@ -61,6 +62,9 @@ export default function Home() {
     mustSendAddressProof,
     addressProof,
     setAddressProof,
+    isUfRj,
+    isHighSalary,
+    setIsHighSalary,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0;
@@ -133,41 +137,96 @@ export default function Home() {
               </OpacityAnimation>
               )}
 
-              {activeStep === 3 && (
-              <OpacityAnimation>
-                <CompanySelectionCard
-                  setSelectedWorkplace={setSelectedWorkplace}
-                  selectedWorkplace={selectedWorkplace}
-                  workplaces={workplaces}
-                />
-              </OpacityAnimation>
+              {isUfRj ? (
+                <>
+                  {activeStep === 3 && (
+                  <OpacityAnimation>
+                    <HighSalaryCard
+                      isHighSalary={isHighSalary}
+                      setIsHighSalary={setIsHighSalary}
+                    />
+                  </OpacityAnimation>
+                  )}
+
+                  {activeStep === 4 && (
+                    <OpacityAnimation>
+                      <CompanySelectionCard
+                        setSelectedWorkplace={setSelectedWorkplace}
+                        selectedWorkplace={selectedWorkplace}
+                        workplaces={workplaces}
+                      />
+                    </OpacityAnimation>
+                  )}
+
+                  {activeStep === 5 && (
+                  <OpacityAnimation>
+                    <WaitingCard consultCode={consultCode} />
+                  </OpacityAnimation>
+                  )}
+
+                  {activeStep !== 5 && (
+                  <ButtonsContainer>
+                    {activeStep !== 1 && (
+                    <OpacityAnimation>
+                      <Button onClick={prevStep} disabled={(activeStep === 3 && isSendingData)}>
+                        Voltar
+                      </Button>
+                    </OpacityAnimation>
+                    )}
+                    <OpacityAnimation>
+                      <Button
+                        onClick={activeStep === 4 ? calculateRoute : nextStep}
+                        disabled={(!canAdvanceStep || (activeStep === 4 && isSendingData))}
+                      >
+                        {activeStep === 4 ? 'Roteirizar' : 'Próximo'}
+                      </Button>
+                    </OpacityAnimation>
+                  </ButtonsContainer>
+                  )}
+                </>
+              ) : (
+                <>
+                  {activeStep === 3 && (
+                  <OpacityAnimation>
+                    <CompanySelectionCard
+                      setSelectedWorkplace={setSelectedWorkplace}
+                      selectedWorkplace={selectedWorkplace}
+                      workplaces={workplaces}
+                      isUfRj={isUfRj}
+                      isHighSalary={isHighSalary}
+                      setIsHighSalary={setIsHighSalary}
+                    />
+                  </OpacityAnimation>
+                  )}
+
+                  {activeStep === 4 && (
+                  <OpacityAnimation>
+                    <WaitingCard consultCode={consultCode} />
+                  </OpacityAnimation>
+                  )}
+
+                  {activeStep !== 4 && (
+                  <ButtonsContainer>
+                    {activeStep !== 1 && (
+                    <OpacityAnimation>
+                      <Button onClick={prevStep} disabled={(activeStep === 3 && isSendingData)}>
+                        Voltar
+                      </Button>
+                    </OpacityAnimation>
+                    )}
+                    <OpacityAnimation>
+                      <Button
+                        onClick={activeStep === 3 ? calculateRoute : nextStep}
+                        disabled={(!canAdvanceStep || (activeStep === 3 && isSendingData))}
+                      >
+                        {activeStep === 3 ? 'Roteirizar' : 'Próximo'}
+                      </Button>
+                    </OpacityAnimation>
+                  </ButtonsContainer>
+                  )}
+                </>
               )}
 
-              {activeStep === 4 && (
-                <OpacityAnimation>
-                  <WaitingCard consultCode={consultCode} />
-                </OpacityAnimation>
-              )}
-
-              {activeStep !== 4 && (
-              <ButtonsContainer>
-                {activeStep !== 1 && (
-                <OpacityAnimation>
-                  <Button onClick={prevStep} disabled={(activeStep === 3 && isSendingData)}>
-                    Voltar
-                  </Button>
-                </OpacityAnimation>
-                )}
-                <OpacityAnimation>
-                  <Button
-                    onClick={activeStep === 3 ? calculateRoute : nextStep}
-                    disabled={(!canAdvanceStep || (activeStep === 3 && isSendingData))}
-                  >
-                    {activeStep === 3 ? 'Roteirizar' : 'Próximo'}
-                  </Button>
-                </OpacityAnimation>
-              </ButtonsContainer>
-              )}
             </FormCard>
           </>
         )}

@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {
-  useCallback, useEffect, useRef, useState,
+  useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,8 @@ export default function useHome() {
   const [number, setNumber] = useState('');
   const [complement, setComplement] = useState('');
   const [isManualFill, setIsManualFill] = useState(false);
+  const [isUfRj, setIsUfRj] = useState(false);
+  const [isHighSalary, setIsHighSalary] = useState(false);
 
   const [consultCode, setConsultCode] = useState('');
   const [, setEmployeeCode] = useState('');
@@ -74,31 +76,62 @@ export default function useHome() {
     err.field === 'cep'
   )) && ((!!addressProof && mustSendAddressProof) || !currentCep || !mustSendAddressProof));
   const isThirdStepValid = (selectedWorkplace.value && errors.length === 0);
-  const stepsValidationMap = {
-    1: isFirstStepValid,
-    2: isSecondStepValid,
-    3: isThirdStepValid,
-  };
+  const stepsValidationMap = useMemo(() => (
+    isUfRj ? {
+      1: isFirstStepValid,
+      2: isSecondStepValid,
+      3: true,
+      4: isThirdStepValid,
+    } : {
+      1: isFirstStepValid,
+      2: isSecondStepValid,
+      3: isThirdStepValid,
+    }
+  ), [isFirstStepValid, isSecondStepValid, isThirdStepValid, isUfRj]);
+
   const canAdvanceStep = stepsValidationMap[activeStep];
 
-  const steps = [
-    {
-      label: 'Dados Pessoais',
-      step: 1,
-    },
-    {
-      label: 'Endereço',
-      step: 2,
-    },
-    {
-      label: 'Local de trabalho',
-      step: 3,
-    },
-    {
-      label: 'Aguarde',
-      step: 4,
-    },
-  ];
+  const steps = useMemo(() => (
+    !isUfRj ? [
+      {
+        label: 'Dados Pessoais',
+        step: 1,
+      },
+      {
+        label: 'Endereço',
+        step: 2,
+      },
+      {
+        label: 'Local de trabalho',
+        step: 3,
+      },
+      {
+        label: 'Aguarde',
+        step: 4,
+      },
+    ] : [
+      {
+        label: 'Dados',
+        step: 1,
+      },
+      {
+        label: 'Residência',
+        step: 2,
+      },
+      {
+        label: 'Salário',
+        step: 3,
+      },
+      {
+        label: 'Trabalho',
+        step: 4,
+      },
+      {
+        label: 'Aguarde',
+        step: 5,
+      },
+    ]
+  ), [isUfRj]);
 
   const toastStatusId = useRef(null);
 
@@ -151,9 +184,14 @@ export default function useHome() {
     }
   }
 
-  const nextStep = () => {
-    setActiveStep((prevState) => prevState + 1);
-  };
+  const nextStep = useCallback(() => {
+    setActiveStep((prevState) => {
+      if (prevState + 1 === 3 && isUfRj) {
+        toast.warn('Identificamos que sua residência fica no estado do RJ, portanto, precisamos saber se seu salário é maior que R$ 3.221,00 para atribuir corretamente os valores de sua consulta por conta da regra de integração que funciona de forma diferente dependendo deste critério', { toastId: 'isUfRj' });
+      }
+      return prevState + 1;
+    });
+  }, [isUfRj]);
 
   const prevStep = () => {
     setActiveStep((prevState) => prevState - 1);
@@ -185,6 +223,8 @@ export default function useHome() {
         setDistrict(cepInfo.bairro);
         setCity(cepInfo.localidade);
         setUf(cepInfo.uf);
+
+        setIsUfRj(cepInfo.uf === 'RJ');
 
         if (!cepInfo.bairro || !cepInfo.logradouro) {
           setIsManualFill(true);
@@ -421,7 +461,7 @@ export default function useHome() {
     } finally {
       setIsSendingData(false);
     }
-  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, mustSendAddressProof, name, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
+  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, mustSendAddressProof, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
 
   useEffect(() => {
     if (hasCodEmpresaQuery && !intervalId) {
@@ -480,5 +520,8 @@ export default function useHome() {
     mustSendAddressProof,
     addressProof,
     setAddressProof,
+    isUfRj,
+    isHighSalary,
+    setIsHighSalary,
   };
 }

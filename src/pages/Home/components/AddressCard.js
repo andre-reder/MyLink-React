@@ -19,7 +19,7 @@ export default function AddressCard({
   complement,
   handleNumberChange,
   handleComplementChange,
-  isManualFill,
+  // isManualFill,
   handleStreetnameChange,
   handleDistrictChange,
   getErrorMessageByFieldName,
@@ -49,7 +49,7 @@ export default function AddressCard({
       </FormGroup>
       <FormGroup isLoading={isGettinCepData} error={getErrorMessageByFieldName('streetname')}>
         <Input
-          disabled={!isManualFill}
+          // disabled={!isManualFill}
           error={getErrorMessageByFieldName('streetname')}
           onChange={handleStreetnameChange}
           placeholder="Logradouro"
@@ -76,7 +76,7 @@ export default function AddressCard({
       </AsideFormGroup>
       <FormGroup isLoading={isGettinCepData} error={getErrorMessageByFieldName('district')}>
         <Input
-          disabled={!isManualFill}
+          // disabled={!isManualFill}
           placeholder="Bairro"
           error={getErrorMessageByFieldName('district')}
           onChange={handleDistrictChange}
@@ -156,7 +156,7 @@ AddressCard.propTypes = {
   uf: PropTypes.string.isRequired,
   handleNumberChange: PropTypes.func.isRequired,
   handleComplementChange: PropTypes.func.isRequired,
-  isManualFill: PropTypes.bool.isRequired,
+  // isManualFill: PropTypes.bool.isRequired,
   handleStreetnameChange: PropTypes.func.isRequired,
   handleDistrictChange: PropTypes.func.isRequired,
   addressProof: PropTypes.string.isRequired,

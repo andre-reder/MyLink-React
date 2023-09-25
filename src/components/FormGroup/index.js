@@ -3,10 +3,10 @@ import Spinner from '../Spinner';
 import { Container } from './styles';
 
 export default function FormGroup({
-  children, error, isLoading, aside,
+  children, error, isLoading, aside, centered,
 }) {
   return (
-    <Container aside={aside}>
+    <Container aside={aside} centered={centered}>
       <div className="form-item">
         { children }
 
@@ -26,10 +26,12 @@ FormGroup.propTypes = {
   error: PropTypes.string,
   isLoading: PropTypes.bool,
   aside: PropTypes.bool,
+  centered: PropTypes.bool,
 };
 
 FormGroup.defaultProps = {
   error: null,
   isLoading: false,
   aside: false,
+  centered: false,
 };
