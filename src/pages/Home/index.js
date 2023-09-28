@@ -65,6 +65,7 @@ export default function Home() {
     isUfRj,
     isHighSalary,
     setIsHighSalary,
+    mustVerifyIsRj,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0;
@@ -137,7 +138,7 @@ export default function Home() {
               </OpacityAnimation>
               )}
 
-              {isUfRj ? (
+              {(isUfRj && mustVerifyIsRj) ? (
                 <>
                   {activeStep === 3 && (
                   <OpacityAnimation>

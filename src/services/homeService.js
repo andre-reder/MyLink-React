@@ -30,10 +30,11 @@ class HomeService {
     token,
     codEmpresa,
     codLocTrab,
+    semIntregraRJ,
     reqBody,
   }) {
     return this.httpClient.post({
-      path: `/RTL_Roteirizar?appCode=2&codEmpresa=${codEmpresa}&codLocTrab=${codLocTrab}`,
+      path: `/RTL_Roteirizar?appCode=2&codEmpresa=${codEmpresa}&codLocTrab=${codLocTrab}&semIntregraRJ=${semIntregraRJ}`,
       reqBody,
       authorization: token,
     });

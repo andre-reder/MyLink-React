@@ -53,6 +53,7 @@ export default function useHome() {
   const [currentCep, setCurrentCep] = useState(null);
   const [mustSendAddressProof, setMustSendAddressProof] = useState(false);
   const [addressProof, setAddressProof] = useState('');
+  const [mustVerifyIsRj, setMustVerifyIsRj] = useState(false);
 
   const {
     setError, removeError, getErrorMessageByFieldName, errors,
@@ -77,7 +78,7 @@ export default function useHome() {
   )) && ((!!addressProof && mustSendAddressProof) || !currentCep || !mustSendAddressProof));
   const isThirdStepValid = (selectedWorkplace.value && errors.length === 0);
   const stepsValidationMap = useMemo(() => (
-    isUfRj ? {
+    (isUfRj && mustVerifyIsRj) ? {
       1: isFirstStepValid,
       2: isSecondStepValid,
       3: true,
@@ -87,12 +88,12 @@ export default function useHome() {
       2: isSecondStepValid,
       3: isThirdStepValid,
     }
-  ), [isFirstStepValid, isSecondStepValid, isThirdStepValid, isUfRj]);
+  ), [isFirstStepValid, isSecondStepValid, isThirdStepValid, isUfRj, mustVerifyIsRj]);
 
   const canAdvanceStep = stepsValidationMap[activeStep];
 
   const steps = useMemo(() => (
-    !isUfRj ? [
+    !(isUfRj && mustVerifyIsRj) ? [
       {
         label: 'Dados Pessoais',
         step: 1,
@@ -131,7 +132,7 @@ export default function useHome() {
         step: 5,
       },
     ]
-  ), [isUfRj]);
+  ), [isUfRj, mustVerifyIsRj]);
 
   const toastStatusId = useRef(null);
 
@@ -186,12 +187,12 @@ export default function useHome() {
 
   const nextStep = useCallback(() => {
     setActiveStep((prevState) => {
-      if (prevState + 1 === 3 && isUfRj) {
+      if (prevState + 1 === 3 && isUfRj && mustVerifyIsRj) {
         toast.warn('Identificamos que sua residência fica no estado do RJ, portanto, precisamos saber se seu salário é maior que R$ 3.221,00 para atribuir corretamente os valores de sua consulta por conta da regra de integração que funciona de forma diferente dependendo deste critério', { toastId: 'isUfRj' });
       }
       return prevState + 1;
     });
-  }, [isUfRj]);
+  }, [isUfRj, mustVerifyIsRj]);
 
   const prevStep = () => {
     setActiveStep((prevState) => prevState - 1);
@@ -224,7 +225,7 @@ export default function useHome() {
         setCity(cepInfo.localidade);
         setUf(cepInfo.uf);
 
-        setIsUfRj(cepInfo.uf === 'RJ');
+        setIsUfRj(cepInfo.uf === 'RJ' && mustVerifyIsRj);
 
         if (!cepInfo.bairro || !cepInfo.logradouro) {
           setIsManualFill(true);
@@ -256,7 +257,7 @@ export default function useHome() {
       toast.error(`Ocorreu um erro ao buscar o CEP (${error})`);
       setIsGettingCepData(false);
     }
-  }, [currentCep, removeError, setError]);
+  }, [currentCep, mustVerifyIsRj, removeError, setError]);
 
   const handleCpfChange = useCallback(async (event) => {
     try {
@@ -273,6 +274,7 @@ export default function useHome() {
           token,
         });
         setCurrentCep(bodyCheckCpf.cepAtual);
+        setMustVerifyIsRj(bodyCheckCpf.regraSemIntegraRJ);
         if (!bodyCheckCpf.liberado) {
           setError({ field: 'cpf', message: 'Este CPF já foi utilizado!' });
           setIsVerifyingCpf(false);
@@ -413,6 +415,7 @@ export default function useHome() {
       const bodySentToCalculate = await toast.promise(homeService.calculateRoute({
         codEmpresa,
         codLocTrab: selectedWorkplace.value,
+        semIntregraRJ: isUfRj && mustVerifyIsRj,
         token,
         reqBody: JSON.stringify({
           cpf,
@@ -461,7 +464,7 @@ export default function useHome() {
     } finally {
       setIsSendingData(false);
     }
-  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, mustSendAddressProof, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
+  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, isUfRj, mustSendAddressProof, mustVerifyIsRj, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
 
   useEffect(() => {
     if (hasCodEmpresaQuery && !intervalId) {
@@ -523,5 +526,6 @@ export default function useHome() {
     isUfRj,
     isHighSalary,
     setIsHighSalary,
+    mustVerifyIsRj,
   };
 }
