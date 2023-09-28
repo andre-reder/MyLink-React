@@ -415,7 +415,7 @@ export default function useHome() {
       const bodySentToCalculate = await toast.promise(homeService.calculateRoute({
         codEmpresa,
         codLocTrab: selectedWorkplace.value,
-        semIntregraRJ: isUfRj && mustVerifyIsRj,
+        semIntregraRJ: !!(isUfRj && mustVerifyIsRj && isHighSalary),
         token,
         reqBody: JSON.stringify({
           cpf,
@@ -464,7 +464,7 @@ export default function useHome() {
     } finally {
       setIsSendingData(false);
     }
-  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, isUfRj, mustSendAddressProof, mustVerifyIsRj, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
+  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, isHighSalary, isUfRj, mustSendAddressProof, mustVerifyIsRj, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
 
   useEffect(() => {
     if (hasCodEmpresaQuery && !intervalId) {
