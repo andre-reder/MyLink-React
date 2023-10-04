@@ -10,7 +10,7 @@ export default function HighSalaryCard({
   return (
     <>
       <div className="title">
-        Seu salário é maior que R$ 3.221,00?
+        Seu salário é maior que R$ 3.205,20?
       </div>
       <FormGroup centered>
         <FilterRadioButtonsContainer>

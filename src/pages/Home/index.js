@@ -229,6 +229,12 @@ export default function Home() {
               )}
 
             </FormCard>
+
+            {activeStep === 3 && isUfRj && mustVerifyIsRj && (
+            <a href="https://site.riobilheteunico.com.br/novas-regras-do-bilhete-unico-intermunicipal/" className="infoLink" target="_blank" rel="noopener noreferrer">
+              Acesse aqui mais detalhes sobre a regra da Riocard referente ao salário.
+            </a>
+            )}
           </>
         )}
       </Container>

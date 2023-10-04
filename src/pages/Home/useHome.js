@@ -188,7 +188,7 @@ export default function useHome() {
   const nextStep = useCallback(() => {
     setActiveStep((prevState) => {
       if (prevState + 1 === 3 && isUfRj && mustVerifyIsRj) {
-        toast.warn('Identificamos que sua residência fica no estado do RJ, portanto, precisamos saber se seu salário é maior que R$ 3.221,00 para atribuir corretamente os valores de sua consulta por conta da regra de integração que funciona de forma diferente dependendo deste critério', { toastId: 'isUfRj' });
+        toast.warn('Identificamos que sua residência fica no estado do RJ, portanto, precisamos saber se seu salário é maior que R$ 3.205,20 para atribuir corretamente os valores de sua consulta por conta da regra de integração que funciona de forma diferente dependendo deste critério', { toastId: 'isUfRj' });
       }
       return prevState + 1;
     });

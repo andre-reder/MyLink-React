@@ -7,6 +7,20 @@ export const Container = styled.div`
   justify-content: center;
   gap: 16px;
   padding: 16px;
+
+  .infoLink {
+    text-align: center;
+    color: ${({ theme }) => theme.colors.primary.main};
+    text-decoration: underline;
+    background: none;
+    width: 350px;
+
+    &:hover {
+      color: ${({ theme }) => theme.colors.primary.dark};
+    }
+
+    transition: all 0.2s ease-in-out;
+  }
 `;
 
 export const ButtonsContainer = styled.div`
