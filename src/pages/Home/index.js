@@ -1,20 +1,20 @@
 /* eslint-disable max-len */
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { ButtonsContainer, Container, FormCard } from './styles';
 
-import Header from './components/Header';
-import ProgressSteps from './components/ProgressSteps';
 import Button from '../../components/Button';
-import OpacityAnimation from '../../components/OpacityAnimation';
-import PersonalInfoCard from './components/PersonalInfoCard';
-import useHome from './useHome';
-import AddressCard from './components/AddressCard';
-import Transitions from '../../components/Transition';
 import Loader from '../../components/Loader';
 import NoData from '../../components/NoData';
+import OpacityAnimation from '../../components/OpacityAnimation';
+import Transitions from '../../components/Transition';
+import AddressCard from './components/AddressCard';
 import CompanySelectionCard from './components/CompanySelectionCard';
-import WaitingCard from './components/WaitingCard';
+import Header from './components/Header';
 import HighSalaryCard from './components/HighSalaryCard';
+import PersonalInfoCard from './components/PersonalInfoCard';
+import ProgressSteps from './components/ProgressSteps';
+import WaitingCard from './components/WaitingCard';
+import useHome from './useHome';
 
 export default function Home() {
   const {
@@ -58,7 +58,7 @@ export default function Home() {
     isManualFill,
     handleStreetnameChange,
     handleDistrictChange,
-    codEmpresa,
+    // codEmpresa,
     mustSendAddressProof,
     addressProof,
     setAddressProof,
@@ -82,7 +82,7 @@ export default function Home() {
 
   const consultExpire = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && consultExpired;
 
-  const isCompanyKonecta = codEmpresa == 43769;
+  // const isCompanyKonecta = codEmpresa == 43769;
 
   return (
     <Transitions>
@@ -295,11 +295,11 @@ export default function Home() {
           icon="sad"
           label={(
             <>
-              Não conseguimos encontrar nenhum resultado, mas não se preocupe!.
-              Baixe a carta abaixo, preencha e envie para o RH ou anexe
-              no sistema de admissão on-line que está utilizando.
+              Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 24 horas enviaremos um e-mail com o resultado para você!
+              Se acaso não receber, enviei uma mensagem para nosso
+              <a href="https://wa.me/5511991650055?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
 
-              <br />
+              {/* <br />
 
               <strong>Dica:</strong>
               {' '}
@@ -312,7 +312,7 @@ export default function Home() {
                 <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
                   Baixar Carta
                 </Link>
-              )}
+              )} */}
             </>
 )}
         />
