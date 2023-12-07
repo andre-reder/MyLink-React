@@ -295,8 +295,8 @@ export default function Home() {
           icon="sad"
           label={(
             <>
-              Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 24 horas enviaremos um e-mail com o resultado para você!
-              Se acaso não receber, enviei uma mensagem para nosso
+              Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
+              Se acaso não receber, envie uma mensagem para nosso
               <a href="https://wa.me/5511991650055?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
 
               {/* <br />
