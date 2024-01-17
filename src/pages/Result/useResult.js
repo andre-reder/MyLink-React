@@ -200,6 +200,9 @@ export default function useResult() {
         toast.error(`Não foi possível registrar a assinatura, mas não se preocupe! O seu resultado foi implantado normalmente. (${bodySendSignature.msg})`);
       }
 
+      if (allowPdfDownload) {
+        toast.info('Não se esqueça de fazer o download de sua carta, clicando no botão "Baixar Carta", e enviá-la para o RH de sua empresa!', { style: { fontWeight: 'bold' } });
+      }
       toast.success(action === 'refuse' ? 'A opção pela não utilização do VT foi registrada com sucesso!' : 'Resultado aceito e implantado com sucesso!');
       setAcceptModalShow(false);
       setRefuseModalShow(false);

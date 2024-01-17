@@ -1,11 +1,11 @@
-import { useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useRef } from 'react';
 
 import { toast } from 'react-toastify';
 import FormGroup from '../../../components/FormGroup';
 import Input from '../../../components/Input';
-import { AsideFormGroup } from '../styles';
 import { SecondaryButton } from '../../../components/SecondaryButton';
+import { AsideFormGroup } from '../styles';
 
 export default function AddressCard({
   cep,
@@ -63,6 +63,7 @@ export default function AddressCard({
             value={number}
             onChange={handleNumberChange}
             error={getErrorMessageByFieldName('number')}
+            maxLength={5}
           />
         </FormGroup>
         <FormGroup error={getErrorMessageByFieldName('complement')} aside>
@@ -71,6 +72,7 @@ export default function AddressCard({
             value={complement}
             onChange={handleComplementChange}
             error={getErrorMessageByFieldName('complement')}
+            maxLength={20}
           />
         </FormGroup>
       </AsideFormGroup>
