@@ -66,9 +66,10 @@ export default function Home() {
     isHighSalary,
     setIsHighSalary,
     mustVerifyIsRj,
+    workplacesOptions,
   } = useHome();
 
-  const hasWorkplaces = workplaces.length !== 0;
+  const hasWorkplaces = workplaces.length !== 0 && !isLoading;
 
   const isFormSuccessfullyLoaded = (!isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !hasError && !errorAtResultGeneration && !consultExpired);
 
@@ -154,7 +155,7 @@ export default function Home() {
                       <CompanySelectionCard
                         setSelectedWorkplace={setSelectedWorkplace}
                         selectedWorkplace={selectedWorkplace}
-                        workplaces={workplaces}
+                        workplaces={workplacesOptions}
                       />
                     </OpacityAnimation>
                   )}
@@ -192,7 +193,7 @@ export default function Home() {
                     <CompanySelectionCard
                       setSelectedWorkplace={setSelectedWorkplace}
                       selectedWorkplace={selectedWorkplace}
-                      workplaces={workplaces}
+                      workplaces={workplacesOptions}
                       isUfRj={isUfRj}
                       isHighSalary={isHighSalary}
                       setIsHighSalary={setIsHighSalary}

@@ -1,4 +1,4 @@
-const isHomolog = false;
+const isHomolog = true;
 const isAws = true;
 
 export const apiCode = '232527';

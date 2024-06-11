@@ -2,17 +2,17 @@
 import {
   useCallback, useEffect, useMemo, useRef, useState,
 } from 'react';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAppContext } from '../../contexts/auth';
 import useErrors from '../../hooks/useErrors';
 import { useQuery } from '../../hooks/useQuery';
+import homeService from '../../services/homeService';
+import formatCep from '../../utils/formatCep';
 import formatCpf from '../../utils/formatCpf';
 import isCpfvalid from '../../utils/isCpfValid';
 import isEmailValid from '../../utils/isEmailValid';
-import formatCep from '../../utils/formatCep';
 import onlyNumbers from '../../utils/onlyNumbers';
-import homeService from '../../services/homeService';
-import { useAppContext } from '../../contexts/auth';
 
 export default function useHome() {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,6 +55,28 @@ export default function useHome() {
   const [addressProof, setAddressProof] = useState('');
   const [mustVerifyIsRj, setMustVerifyIsRj] = useState(false);
 
+  const workplacesOptions = useMemo(() => {
+    if (workplaces.length === 0) return [];
+
+    const exceptions = ['GO', 'DF'];
+    const isCepFromSomeException = exceptions.some((exception) => exception === uf);
+
+    const filteredWorkplaces = workplaces.filter((wp) => {
+      if (!uf) return true;
+
+      if (!isCepFromSomeException) {
+        return wp.uf === uf;
+      }
+      return exceptions.includes(wp.uf);
+    });
+
+    if (filteredWorkplaces.length === 0) {
+      toast.warn('Não há nenhum local de trabalho na mesma UF do CEP informado. Por favor, verifique se inseriu o seu CEP corretamente', { toastId: 'noWorkplaces' });
+    }
+
+    return filteredWorkplaces;
+  }, [uf, workplaces]);
+
   const {
     setError, removeError, getErrorMessageByFieldName, errors,
   } = useErrors();
@@ -73,7 +95,7 @@ export default function useHome() {
   const isFirstStepValid = (cpf && name && email && !errors.some((err) => (
     err.field === 'name' || err.field === 'cpf' || err.field === 'email'
   )));
-  const isSecondStepValid = (cep && streetName && number && district && city && uf && !errors.some((err) => (
+  const isSecondStepValid = (cep && streetName && number && district && city && uf && workplacesOptions.length !== 0 && !errors.some((err) => (
     err.field === 'cep'
   )) && ((!!addressProof && mustSendAddressProof) || !currentCep || !mustSendAddressProof));
   const isThirdStepValid = (selectedWorkplace.value && errors.length === 0);
@@ -331,6 +353,7 @@ export default function useHome() {
         label: wp.localTrabalho || 'Sem descrição',
         value: wp.codEndCliente,
         address: `${wp.logradouroLt}, ${wp.numLt}, ${wp.bairroLt} - ${wp.cidadeLt} ${wp.ufLt}`,
+        uf: wp.ufLt,
       }));
       setWorkplaces(workplacesListMapped);
     } catch (error) {
@@ -506,6 +529,7 @@ export default function useHome() {
     companyNotAllowed,
     logoSrc,
     workplaces,
+    workplacesOptions,
     hasError,
     setSelectedWorkplace,
     selectedWorkplace,
