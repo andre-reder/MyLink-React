@@ -8,7 +8,7 @@ import { useQuery } from '../../hooks/useQuery';
 import resultService from '../../services/resultService';
 import formatCurrency from '../../utils/formatCurrency';
 import renderArrayWithComa from '../../utils/renderArrayWithComa';
-import sendWhatsapp from '../../utils/sendWhatsapp';
+import sendLinkWhatsapp from '../../utils/sendLinkWhatsapp';
 
 export default function useResult() {
   const [isLoading, setIsLoading] = useState(true);
@@ -188,10 +188,15 @@ export default function useResult() {
 
       if (allowPdfDownload) {
         const docLink = bodyAction.linkCarta;
+        const logoSrc = bodyAction.linkLogo;
 
-        const sentWhatsapp = await sendWhatsapp({
+        const sentWhatsapp = await sendLinkWhatsapp({
           phone: employeeCellphone,
-          message: `😄 Seu processo de roteirização de vale-transporte foi concluído com sucesso! Você pode visualizar e baixar a sua carta de opção de Vale-Transporte através do link abaixo: \n\n${docLink}`,
+          message: `😄 Seu processo de roteirização de vale-transporte foi concluído com sucesso! Você pode visualizar e baixar a sua carta de opção de Vale-Transporte através do link abaixo:\n\nCaso não consiga clicar no link, responda a essa mensagem, ou nos adicione em sua lista de contatos.\n\n${docLink}`,
+          image: logoSrc,
+          linkUrl: docLink,
+          title: 'Carta de Vale-Transporte',
+          linkDescription: 'Clique aqui para acessar sua carta de opção de Vale-Transporte!',
         });
 
         const channelsThatMessageWasSent = [bodyAction.enviouEmail ? 'e-mail' : '', sentWhatsapp.success ? 'WhatsApp' : ''].filter((x) => !!x);

@@ -14,7 +14,7 @@ import formatPhone from '../../utils/formatPhone';
 import isCpfvalid from '../../utils/isCpfValid';
 import isEmailValid from '../../utils/isEmailValid';
 import onlyNumbers from '../../utils/onlyNumbers';
-import sendWhatsapp from '../../utils/sendWhatsapp';
+import sendLinkWhatsapp from '../../utils/sendLinkWhatsapp';
 
 export default function useHome() {
   const [isLoading, setIsLoading] = useState(false);
@@ -230,6 +230,10 @@ export default function useHome() {
       if (prevState + 1 === 3 && isUfRj && mustVerifyIsRj) {
         toast.warn('Identificamos que sua residência fica no estado do RJ, portanto, precisamos saber se seu salário é maior que R$ 3.205,20 para atribuir corretamente os valores de sua consulta por conta da regra de integração que funciona de forma diferente dependendo deste critério', { toastId: 'isUfRj' });
       }
+
+      if (prevState === 1) {
+        toast.info('Enviaremos o link para acesso ao resultado no WhatsApp informado através do contato CAPTA MOBILIDADE.', { toastId: 'sendLink' });
+      }
       return prevState + 1;
     });
   }, [isUfRj, mustVerifyIsRj]);
@@ -351,7 +355,7 @@ export default function useHome() {
         toastId: 'welcomeToast',
       });
     } catch (error) {
-      toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
+      toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`, { toastId: 'companyNotAllowed' });
       setHasError(true);
     }
   }, [codEmpresa, token]);
@@ -487,9 +491,15 @@ export default function useHome() {
 
       const resultLink = bodySentToCalculate.linkResultado;
       const hasEmailBeenSent = bodySentToCalculate.enviouEmail;
-      const hasWhatsappBeenSent = await sendWhatsapp({
+      const imgUrl = bodySentToCalculate.linkLogo;
+      const companyName = bodySentToCalculate.nomeEmpresa;
+      const hasWhatsappBeenSent = await sendLinkWhatsapp({
         phone: cellphone,
-        message: `👋 Olá, ${name}!\n\n 🚌 Acesse o link abaixo para visualizar o resultado da sua roteirização, e prosseguir com o seu processo\n\n${resultLink}`,
+        message: `👋 Olá, ${name}!\n\nVocê é funcionário da empresa *${companyName}*?\n\n🚌 Acesse o link abaixo para visualizar o resultado da sua roteirização, e prosseguir com o seu processo.\n\nCaso não consiga clicar no link, responda a essa mensagem, ou nos adicione em sua lista de contatos.\n\n${resultLink}`,
+        image: imgUrl,
+        linkUrl: resultLink,
+        title: 'Resultado da roteirização',
+        linkDescription: 'Clique aqui para acessar o resultado da sua roteirização de itinerário de Vale-Transporte!',
       });
 
       setSentEmail(hasEmailBeenSent);
