@@ -7,12 +7,15 @@ import { useAppContext } from '../../contexts/auth';
 import { useQuery } from '../../hooks/useQuery';
 import resultService from '../../services/resultService';
 import formatCurrency from '../../utils/formatCurrency';
+import renderArrayWithComa from '../../utils/renderArrayWithComa';
+import sendWhatsapp from '../../utils/sendWhatsapp';
 
 export default function useResult() {
   const [isLoading, setIsLoading] = useState(true);
   const [goingRoute, setGoingRoute] = useState([]);
   const [returningRoute, setReturningRoute] = useState([]);
   const [tickets, setTickets] = useState([]);
+  const [employeeCellphone, setEmployeeCellphone] = useState('');
   const [view, setView] = useState('going');
   const [hasError, setHasError] = useState(false);
   const [exceededPrice, setExceededPrice] = useState(false);
@@ -59,6 +62,8 @@ export default function useResult() {
       setGoingRoute(result.trajetoIda);
       setReturningRoute(result.trajetoVolta);
       setTickets(result.valeTransp);
+      setEmployeeCellphone(result.dadosFuncionario.celularFunc);
+      setAllowPdfDownload(result.ExibeCarta);
       const maxPriceAllowed = result.valorTeto;
       const hasExceededPrice = (
         result.dadosConsulta.valorVtTotal > maxPriceAllowed
@@ -181,6 +186,19 @@ export default function useResult() {
       }
       setResultStatus(action === 'refuse' ? 'refused' : 'accepted');
 
+      if (allowPdfDownload) {
+        const docLink = bodyAction.linkCarta;
+
+        const sentWhatsapp = await sendWhatsapp({
+          phone: employeeCellphone,
+          message: `😄 Seu processo de roteirização de vale-transporte foi concluído com sucesso! Você pode visualizar e baixar a sua carta de opção de Vale-Transporte através do link abaixo: \n\n${docLink}`,
+        });
+
+        const channelsThatMessageWasSent = [bodyAction.enviouEmail ? 'e-mail' : '', sentWhatsapp.success ? 'WhatsApp' : ''].filter((x) => !!x);
+
+        toast.info(`Não se esqueça de fazer o download de sua carta, clicando no botão "Baixar Carta", e enviá-la para o RH de sua empresa! Também enviamos o link para acessar a carta em seu ${renderArrayWithComa(channelsThatMessageWasSent)}`, { style: { fontWeight: 'bold' } });
+      }
+
       const dataUrl = canvas.toDataURL('image/png');
       const byteString = atob(dataUrl.split(',')[1]);
       const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
@@ -199,10 +217,6 @@ export default function useResult() {
       if (!bodySendSignature.codigo) {
         toast.error(`Não foi possível registrar a assinatura, mas não se preocupe! O seu resultado foi implantado normalmente. (${bodySendSignature.msg})`);
       }
-
-      if (allowPdfDownload) {
-        toast.info('Não se esqueça de fazer o download de sua carta, clicando no botão "Baixar Carta", e enviá-la para o RH de sua empresa!', { style: { fontWeight: 'bold' } });
-      }
       toast.success(action === 'refuse' ? 'A opção pela não utilização do VT foi registrada com sucesso!' : 'Resultado aceito e implantado com sucesso!');
       setAcceptModalShow(false);
       setRefuseModalShow(false);
@@ -216,7 +230,7 @@ export default function useResult() {
     } finally {
       setIsSomeActionLoading(false);
     }
-  }, [allowPdfDownload, consultCode, employeeCode, token]);
+  }, [allowPdfDownload, consultCode, employeeCellphone, employeeCode, token]);
 
   function handleTryAgain() {
     loadResult();

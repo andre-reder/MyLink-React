@@ -12,6 +12,8 @@ export default function PersonalInfoCard({
   handleNameChange,
   email,
   handleEmailChange,
+  cellphone,
+  handleCellphoneChange,
 }) {
   return (
     <>
@@ -44,6 +46,14 @@ export default function PersonalInfoCard({
           error={getErrorMessageByFieldName('email')}
         />
       </FormGroup>
+      <FormGroup error={getErrorMessageByFieldName('cellphone')}>
+        <Input
+          placeholder="Celular (WhatsApp)"
+          value={cellphone}
+          onChange={handleCellphoneChange}
+          error={getErrorMessageByFieldName('cellphone')}
+        />
+      </FormGroup>
     </>
   );
 }
@@ -57,4 +67,6 @@ PersonalInfoCard.propTypes = {
   handleNameChange: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   handleEmailChange: PropTypes.func.isRequired,
+  cellphone: PropTypes.string.isRequired,
+  handleCellphoneChange: PropTypes.func.isRequired,
 };

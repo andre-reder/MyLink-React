@@ -10,9 +10,11 @@ import { useQuery } from '../../hooks/useQuery';
 import homeService from '../../services/homeService';
 import formatCep from '../../utils/formatCep';
 import formatCpf from '../../utils/formatCpf';
+import formatPhone from '../../utils/formatPhone';
 import isCpfvalid from '../../utils/isCpfValid';
 import isEmailValid from '../../utils/isEmailValid';
 import onlyNumbers from '../../utils/onlyNumbers';
+import sendWhatsapp from '../../utils/sendWhatsapp';
 
 export default function useHome() {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +25,7 @@ export default function useHome() {
   const [cpf, setCpf] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [cellphone, setCellphone] = useState('');
 
   const [cep, setCep] = useState('');
   const [streetName, setStreetName] = useState('');
@@ -54,6 +57,9 @@ export default function useHome() {
   const [mustSendAddressProof, setMustSendAddressProof] = useState(false);
   const [addressProof, setAddressProof] = useState('');
   const [mustVerifyIsRj, setMustVerifyIsRj] = useState(false);
+
+  const [sentEmail, setSentEmail] = useState(false);
+  const [sentWhatsapp, setSentWhatsapp] = useState(false);
 
   const workplacesOptions = useMemo(() => {
     if (workplaces.length === 0) return [];
@@ -92,13 +98,16 @@ export default function useHome() {
   const employeeCodeQuery = query.get('codFuncionario');
   const consultCodeQuery = query.get('codConsulta');
 
-  const isFirstStepValid = (cpf && name && email && !errors.some((err) => (
+  const isFirstStepValid = (cpf && name && email && cellphone && !errors.some((err) => (
     err.field === 'name' || err.field === 'cpf' || err.field === 'email'
   )));
+
   const isSecondStepValid = (cep && streetName && number && district && city && uf && workplacesOptions.length !== 0 && !errors.some((err) => (
     err.field === 'cep'
   )) && ((!!addressProof && mustSendAddressProof) || !currentCep || !mustSendAddressProof));
+
   const isThirdStepValid = (selectedWorkplace.value && errors.length === 0);
+
   const stepsValidationMap = useMemo(() => (
     (isUfRj && mustVerifyIsRj) ? {
       1: isFirstStepValid,
@@ -173,6 +182,15 @@ export default function useHome() {
       setError({ field: 'email', message: 'Informe um e-mail válido!' });
     } else {
       removeError('email');
+    }
+  }
+
+  function handleCellphoneChange(event) {
+    setCellphone(formatPhone(event.target.value));
+    if (!event.target.value || event.target.value.length < 14) {
+      setError({ field: 'cellphone', message: 'Informe um celular válido!' });
+    } else {
+      removeError('cellphone');
     }
   }
 
@@ -435,6 +453,7 @@ export default function useHome() {
   const calculateRoute = useCallback(async () => {
     try {
       setIsSendingData(true);
+      const strNum = cellphone.replace(/[^\d]+/g, '');
       const bodySentToCalculate = await toast.promise(homeService.calculateRoute({
         codEmpresa,
         codLocTrab: selectedWorkplace.value,
@@ -451,30 +470,43 @@ export default function useHome() {
           bairroF: district,
           cidadeF: city,
           ufF: uf,
+          celularFunc: `+55${strNum}`,
         }),
       }), {
         pending: 'Estamos enviando seus dados para a roteirização.',
         success: 'Seus dados foram enviados com sucesso!',
         error: 'Não foi possível enviar seus dados para a roteirização',
       });
+
       const hasBeenSentSuccessfully = bodySentToCalculate.codigo;
       if (!hasBeenSentSuccessfully) {
         toast.error(`Houve um erro ao enviar seus dados para roteirização. Por favor, tente novamente ${bodySentToCalculate.msg}`);
         prevStep();
         return;
       }
-      toastStatusId.current = toast('Só mais um pouco! Vamos atualizar aqui pra você o status do processamento do seu resultdao.', {
+
+      const resultLink = bodySentToCalculate.linkResultado;
+      const hasEmailBeenSent = bodySentToCalculate.enviouEmail;
+      const hasWhatsappBeenSent = await sendWhatsapp({
+        phone: cellphone,
+        message: `👋 Olá, ${name}!\n\n 🚌 Acesse o link abaixo para visualizar o resultado da sua roteirização, e prosseguir com o seu processo\n\n${resultLink}`,
+      });
+
+      setSentEmail(hasEmailBeenSent);
+      setSentWhatsapp(hasWhatsappBeenSent.success);
+
+      toastStatusId.current = toast('Só mais um pouco! Vamos atualizar aqui pra você o status do processamento do seu resultado.', {
         autoClose: false,
         icon: '😁',
       });
       const employeeCode = bodySentToCalculate.codFuncionario;
       if (mustSendAddressProof) {
-        const bodySendSignature = await homeService.sendAddressProof({
+        const bodySendAddressProof = await homeService.sendAddressProof({
           codFuncionario: employeeCode,
           reqBody: [{ key: 'file', value: addressProof }],
         });
-        if (!bodySendSignature.codigo) {
-          toast.warn(`Não foi possível enviar seu comprovante, mas não se preocupe! O seu resultado continua sendo gerado normalmente. (${bodySendSignature.msg})`);
+        if (!bodySendAddressProof.codigo) {
+          toast.warn(`Não foi possível enviar seu comprovante, mas não se preocupe! O seu resultado continua sendo gerado normalmente. (${bodySendAddressProof.msg})`);
         }
       }
       nextStep();
@@ -487,7 +519,7 @@ export default function useHome() {
     } finally {
       setIsSendingData(false);
     }
-  }, [addressProof, cep, city, codEmpresa, complement, cpf, district, email, isHighSalary, isUfRj, mustSendAddressProof, mustVerifyIsRj, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
+  }, [addressProof, cellphone, cep, city, codEmpresa, complement, cpf, district, email, isHighSalary, isUfRj, mustSendAddressProof, mustVerifyIsRj, name, nextStep, number, selectedWorkplace.value, startResultStatusInterval, streetName, token, uf]);
 
   useEffect(() => {
     if (hasCodEmpresaQuery && !intervalId) {
@@ -551,5 +583,9 @@ export default function useHome() {
     isHighSalary,
     setIsHighSalary,
     mustVerifyIsRj,
+    cellphone,
+    handleCellphoneChange,
+    sentEmail,
+    sentWhatsapp,
   };
 }

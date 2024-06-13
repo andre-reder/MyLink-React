@@ -1,9 +1,10 @@
 /* eslint-disable max-len */
-import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import renderArrayWithComa from '../../../utils/renderArrayWithComa';
 import { WaitingCardContainer } from '../styles';
 
-export default function WaitingCard({ consultCode }) {
+export default function WaitingCard({ consultCode, sentEmail, sentWhatsapp }) {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
@@ -19,6 +20,8 @@ export default function WaitingCard({ consultCode }) {
     return `${minutes < 10 ? '0' : ''}${minutes}:${secondsDisplay < 10 ? '0' : ''}${secondsDisplay}`;
   };
 
+  const channelsThatMessageWasSent = [sentEmail ? 'e-mail' : '', sentWhatsapp ? 'WhatsApp' : ''].filter((x) => !!x);
+
   return (
     <WaitingCardContainer>
       <header>
@@ -28,7 +31,10 @@ export default function WaitingCard({ consultCode }) {
       </header>
 
       <span>
-        O tempo estimado para seu resultado ser gerado é de 50 segundos. Enquanto isso, enviaremos um link para o seu e-mail, no qual você poderá acessar seu resultado e utilizar em caso de solicitação de ajuste do resultado e para baixar nova carta de opção de Vale-Transporte
+        O tempo estimado para seu resultado ser gerado é de 50 segundos. Enviamos o link para acesso ao resultado no seu
+        {' '}
+        {renderArrayWithComa(channelsThatMessageWasSent)}
+        , onde você poderá solicitar algu ajuste se necessário, ou aceitar o resultado e concluir o seu processo.
       </span>
 
       <div className="timer">
@@ -40,4 +46,6 @@ export default function WaitingCard({ consultCode }) {
 
 WaitingCard.propTypes = {
   consultCode: PropTypes.number.isRequired,
+  sentEmail: PropTypes.bool.isRequired,
+  sentWhatsapp: PropTypes.bool.isRequired,
 };

@@ -67,6 +67,10 @@ export default function Home() {
     setIsHighSalary,
     mustVerifyIsRj,
     workplacesOptions,
+    cellphone,
+    handleCellphoneChange,
+    sentEmail,
+    sentWhatsapp,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0 && !isLoading;
@@ -107,9 +111,8 @@ export default function Home() {
                   handleNameChange={handleNameChange}
                   email={email}
                   handleEmailChange={handleEmailChange}
-                  cep={cep}
-                  handleCepChange={handleCepChange}
-                  isGettinCepData={isGettinCepData}
+                  cellphone={cellphone}
+                  handleCellphoneChange={handleCellphoneChange}
                 />
               </OpacityAnimation>
               )}
@@ -162,7 +165,11 @@ export default function Home() {
 
                   {activeStep === 5 && (
                   <OpacityAnimation>
-                    <WaitingCard consultCode={consultCode} />
+                    <WaitingCard
+                      consultCode={consultCode}
+                      sentEmail={sentEmail}
+                      sentWhatsapp={sentWhatsapp}
+                    />
                   </OpacityAnimation>
                   )}
 
@@ -203,7 +210,11 @@ export default function Home() {
 
                   {activeStep === 4 && (
                   <OpacityAnimation>
-                    <WaitingCard consultCode={consultCode} />
+                    <WaitingCard
+                      consultCode={consultCode}
+                      sentEmail={sentEmail}
+                      sentWhatsapp={sentWhatsapp}
+                    />
                   </OpacityAnimation>
                   )}
 
