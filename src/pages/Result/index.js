@@ -4,16 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 
 import Button from '../../components/Button';
+import CaptaHeader from '../../components/Header';
 import Loader from '../../components/Loader';
 import MyModal from '../../components/Modal';
 import NoData from '../../components/NoData';
 import Textarea from '../../components/Textarea';
 import Transitions from '../../components/Transition';
+import { domain } from '../../enviromentVariables';
 import formatCurrency from '../../utils/formatCurrency';
 import ConsultCard from './components/ConsultCard';
 import DistanceCard from './components/DistanceCard';
 import PriceCard from './components/PriceCard';
-import CaptaHeader from '../../components/Header';
 import SidebarRoute from './components/SidebarRoute';
 import { IconContainer } from './components/SidebarRoute/components/Route/styles';
 import Timecard from './components/TimeCard';
@@ -35,7 +36,6 @@ import {
   TotalContainer,
 } from './styles';
 import useResult from './useResult';
-import { domain } from '../../enviromentVariables';
 
 export default function Result() {
   const {
@@ -149,7 +149,6 @@ export default function Result() {
                 )}
               </Actions>
             )}
-
           </Display>
 
           <MyModal
