@@ -76,7 +76,7 @@ export default function useHome() {
       return exceptions.includes(wp.uf);
     });
 
-    if (filteredWorkplaces.length === 0) {
+    if (filteredWorkplaces.length === 0 && !!uf) {
       toast.warn('Não há nenhum local de trabalho na mesma UF do CEP informado. Por favor, verifique se inseriu o seu CEP corretamente', { toastId: 'noWorkplaces' });
     }
 

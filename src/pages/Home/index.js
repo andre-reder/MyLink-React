@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 // import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ButtonsContainer, Container, FormCard } from './styles';
 
 import Button from '../../components/Button';
@@ -58,7 +59,7 @@ export default function Home() {
     isManualFill,
     handleStreetnameChange,
     handleDistrictChange,
-    // codEmpresa,
+    codEmpresa,
     mustSendAddressProof,
     addressProof,
     setAddressProof,
@@ -306,26 +307,31 @@ export default function Home() {
         <NoData
           icon="sad"
           label={(
-            <>
-              Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
-              Se acaso não receber, envie uma mensagem para nosso
-              <a href="https://wa.me/5511991650055?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
+            <div>
+              {codEmpresa == 30131 ? (
+                <>
+                  Não conseguimos encontrar um resultado, mas não se preocupe! Você pode baixar a carta de opção de VT fora da abrangência e preencher com as informações necessárias para enviar ao RH da sua empresa.
+                  <br />
 
-              {/* <br />
+                  <strong>Dica:</strong>
+                  {' '}
+                  Antes de enviar a carta, baixe e salve-a em seu smartphone ou computador e depois abra este documento para preencher e assinar pelo seu navegador ou pelo ADOBE ACROBAT!
+                  Isso é mais simples!
 
-              <strong>Dica:</strong>
-              {' '}
-              Antes de enviar a carta, baixe e salve-a em seu smartphone ou computador e depois abra este documento para preencher e assinar pelo seu navegador ou pelo ADOBE ACROBAT!
-              Isso é mais simples!
+                  <br />
 
-              <br />
-
-              {!isCompanyKonecta && (
-                <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
-                  Baixar Carta
-                </Link>
-              )} */}
-            </>
+                  <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
+                    Baixar Carta
+                  </Link>
+                </>
+              ) : (
+                <>
+                  Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
+                  Se acaso não receber, envie uma mensagem para nosso
+                  <a href="https://wa.me/5511991650055?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
+                </>
+              )}
+            </div>
 )}
         />
       )}

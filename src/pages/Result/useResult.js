@@ -204,7 +204,7 @@ export default function useResult() {
 
         const sentWhatsapp = await sendDocumentWhatsapp({
           phone: employeeCellphone,
-          message: `👋 Olá, ${employeeName}! \n\n😄 Boa notícia! \n\n Seu processo de roteirização de vale-transporte foi concluído com sucesso! Aqui está a sua carta de opção de Vale-Transporte.`,
+          message: `👋 Olá, ${employeeName}! \n\n😄 Boa notícia! \n\nSeu processo de roteirização de vale-transporte foi concluído com sucesso! Aqui está a sua carta de opção de Vale-Transporte.`,
           linkUrl: docLink,
           fileName: `Carta de Opção de VT - ${employeeName}`,
         });
@@ -245,7 +245,7 @@ export default function useResult() {
     } finally {
       setIsSomeActionLoading(false);
     }
-  }, [allowPdfDownload, consultCode, employeeCellphone, employeeCode, token]);
+  }, [allowPdfDownload, consultCode, employeeCellphone, employeeCode, employeeName, token]);
 
   function handleTryAgain() {
     loadResult();
