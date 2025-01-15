@@ -18,6 +18,7 @@ export default function useResult() {
   const [tickets, setTickets] = useState([]);
   const [employeeCellphone, setEmployeeCellphone] = useState('');
   const [employeeName, setEmployeeName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [view, setView] = useState('going');
   const [hasError, setHasError] = useState(false);
   const [exceededPrice, setExceededPrice] = useState(false);
@@ -66,6 +67,7 @@ export default function useResult() {
       setTickets(result.valeTransp);
       setEmployeeCellphone(result.dadosFuncionario.celularFunc);
       setEmployeeName(result.dadosFuncionario.nome);
+      setCompanyName(result.dadosFuncionario.nomeEmp);
       setAllowPdfDownload(result.ExibeCarta);
       const maxPriceAllowed = result.valorTeto;
       const hasExceededPrice = (
@@ -207,6 +209,8 @@ export default function useResult() {
           message: `👋 Olá, ${employeeName}! \n\n😄 Boa notícia! \n\nSeu processo de roteirização de vale-transporte foi concluído com sucesso! Aqui está a sua carta de opção de Vale-Transporte.`,
           linkUrl: docLink,
           fileName: `Carta de Opção de VT - ${employeeName}`,
+          companyName,
+          contactName: employeeName,
         });
 
         const channelsThatMessageWasSent = [bodyAction.enviouEmail ? 'e-mail' : '', sentWhatsapp.success ? 'WhatsApp' : ''].filter((x) => !!x);
@@ -245,7 +249,7 @@ export default function useResult() {
     } finally {
       setIsSomeActionLoading(false);
     }
-  }, [allowPdfDownload, consultCode, employeeCellphone, employeeCode, employeeName, token]);
+  }, [allowPdfDownload, companyName, consultCode, employeeCellphone, employeeCode, employeeName, token]);
 
   function handleTryAgain() {
     loadResult();

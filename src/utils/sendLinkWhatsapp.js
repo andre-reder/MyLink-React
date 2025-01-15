@@ -1,28 +1,20 @@
-import { zApiInstanceId, zApiSecurityToken, zApiToken } from '../enviromentVariables';
+import { tokenUtilsApi } from '../enviromentVariables';
 
 export default async function sendLinkWhatsapp({
-  phone, message, linkUrl, image, title, linkDescription,
+  phone, message, linkUrl, image, title, linkDescription, companyName, contactName,
 }) {
   try {
     const strNum = phone.replace(/[^\d]+/g, '');
 
     const response = await fetch(
-      `https://api.z-api.io/instances/${zApiInstanceId}/token/${zApiToken}/send-link`,
+      `https://utils.captamobilidade.com.br/whatsapp/sendLink?phone=${strNum}&message=${encodeURIComponent(message)}&isAutImp=false&companyName=${encodeURIComponent(companyName)}&contactName=${encodeURIComponent(contactName)}&linkUrl=${encodeURIComponent(linkUrl)}&image=${encodeURIComponent(image)}&title=${encodeURIComponent(title)}&linkDescription=${encodeURIComponent(linkDescription)}`,
       {
         method: 'post',
         headers: {
           Accept: 'application/json, text/plain, */*',
           'Content-Type': 'application/json',
-          'Client-Token': zApiSecurityToken,
+          Authorization: `Bearer ${tokenUtilsApi}`,
         },
-        body: JSON.stringify({
-          phone: `+55${strNum}`,
-          message,
-          image,
-          linkUrl,
-          title,
-          linkDescription,
-        }),
       },
     );
     console.log('responseOfSendEmail', response);

@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 // import { Link } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { ButtonsContainer, Container, FormCard } from './styles';
 
 import Button from '../../components/Button';
@@ -260,11 +259,7 @@ export default function Home() {
               Ops! Parece que sua empresa não está com o serviço habilitado.
               Verifique se já foi realizada a solicitação desse serviço, e caso positivo, peça para que seu RH entre em contao com a nossa central de atendimento por WhatsApp!.
               {' '}
-              <a href="https://wa.me/5512997322708">(12)99732-2708</a>
-              {' '}
-              /
-              {' '}
-              <a href="https://wa.me/5511991650055">(11)99165-0055</a>
+              <a href="https://wa.me/5511932323875">(11)93232-3875</a>
             </>
 )}
         />
@@ -308,7 +303,10 @@ export default function Home() {
           icon="sad"
           label={(
             <div>
-              {codEmpresa == 30131 ? (
+              Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
+              Se acaso não receber, envie uma mensagem para nosso
+              <a href="https://wa.me/5511932323875?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
+              {/* {codEmpresa == 30131 ? (
                 <>
                   Não conseguimos encontrar um resultado, mas não se preocupe! Você pode baixar a carta de opção de VT fora da abrangência e preencher com as informações necessárias para enviar ao RH da sua empresa.
                   <br />
@@ -328,9 +326,9 @@ export default function Home() {
                 <>
                   Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
                   Se acaso não receber, envie uma mensagem para nosso
-                  <a href="https://wa.me/5511991650055?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
+                  <a href="https://wa.me/5511932323875?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
                 </>
-              )}
+              )} */}
             </div>
 )}
         />

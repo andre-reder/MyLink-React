@@ -1,19 +1,19 @@
-import { zApiInstanceId, zApiSecurityToken, zApiToken } from '../enviromentVariables';
+import { tokenUtilsApi } from '../enviromentVariables';
 
 export default async function sendDocumentWhatsapp({
-  phone, message, linkUrl, fileName,
+  phone, message, linkUrl, fileName, companyName, contactName,
 }) {
   try {
     const strNum = phone.replace(/[^\d]+/g, '');
 
     const response = await fetch(
-      `https://api.z-api.io/instances/${zApiInstanceId}/token/${zApiToken}/send-document/pdf`,
+      `https://utils.captamobilidade.com.br/whatsapp/sendPdf?phone=${strNum}&message=${encodeURIComponent(message)}&isAutImp=false&linkUrl=${encodeURIComponent(linkUrl)}&fileName=${encodeURIComponent(fileName)}&companyName=${encodeURIComponent(companyName)}&contactName=${encodeURIComponent(contactName)}`,
       {
         method: 'post',
         headers: {
           Accept: 'application/json, text/plain, */*',
           'Content-Type': 'application/json',
-          'Client-Token': zApiSecurityToken,
+          Authorization: `Bearer ${tokenUtilsApi}`,
         },
         body: JSON.stringify({
           phone: `+55${strNum}`,

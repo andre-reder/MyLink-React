@@ -500,6 +500,8 @@ export default function useHome() {
         linkUrl: resultLink,
         title: 'Resultado da roteirização',
         linkDescription: 'Clique aqui para acessar o resultado da sua roteirização de itinerário de Vale-Transporte!',
+        companyName,
+        contactName: name,
       });
 
       setSentEmail(hasEmailBeenSent);
