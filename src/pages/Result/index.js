@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 
 import Button from '../../components/Button';
+import DefaultHereMap from '../../components/DefaultHereMap';
 import CaptaHeader from '../../components/Header';
 import Loader from '../../components/Loader';
 import MyModal from '../../components/Modal';
@@ -70,6 +71,7 @@ export default function Result() {
     isAcceptButtonDisabled,
     setIsAcceptButtonDisabled,
     isBkConsultAndNotOptimized,
+    canShowMap,
   } = useResult();
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -299,14 +301,16 @@ export default function Result() {
           />
 
           <MapContainer>
-            <iframe
-              title="Mapa"
-              src={`https://mapas${domain}/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
-              width={width}
-              height={height}
-              marginWidth={0}
-              marginHeight={0}
-            />
+            {canShowMap ? (
+              <iframe
+                title="Mapa"
+                src={`https://mapas${domain}/home/index?consulta=${consultCode}&sentido=1&rota=1&trajeto=1&h=${height}&w=${width}&z=12`}
+                width={width}
+                height={height}
+                marginWidth={0}
+                marginHeight={0}
+              />
+            ) : <DefaultHereMap height={height} width={width} />}
           </MapContainer>
 
         </Container>

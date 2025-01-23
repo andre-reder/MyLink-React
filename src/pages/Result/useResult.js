@@ -38,12 +38,27 @@ export default function useResult() {
   const [isAcceptButtonDisabled, setIsAcceptButtonDisabled] = useState(true);
 
   const [isBkConsultAndNotOptimized, setIsBkConsultAndNotOptimized] = useState(false);
+  const [canShowMap, setCanShowMap] = useState(false);
 
   const { token } = useAppContext();
   const query = useQuery();
   const consultCode = query.get('codConsulta');
   const employeeCode = query.get('codFuncionario');
   const logo = query.get('logo');
+
+  const checkIfCanShowMap = useCallback(async () => {
+    const checkMap = await fetch(`https://utils.captamobilidade.com.br/routing-maps/${consultCode}_1_1_1`);
+    // const checkMap = await fetch(`http://localhost:3001/routing-maps/${consultCode}_1_1_1`);
+
+    const canShow = await checkMap.json();
+
+    if (canShow.success) {
+      setCanShowMap(true);
+      return;
+    }
+
+    setCanShowMap(false);
+  }, [consultCode]);
 
   const getResult = useCallback(async () => {
     try {
@@ -138,6 +153,7 @@ export default function useResult() {
       await Promise.all([
         getResult(),
         checkResultStatus(),
+        checkIfCanShowMap(),
       ]);
     } catch (error) {
       toast.error(`Não foi possível carregar a página. Por favor, tente novamente (${error})`);
@@ -145,7 +161,7 @@ export default function useResult() {
     } finally {
       setIsLoading(false);
     }
-  }, [checkResultStatus, getResult]);
+  }, [checkResultStatus, getResult, checkIfCanShowMap]);
 
   const requestAdjustment = useCallback(async () => {
     try {
@@ -296,5 +312,6 @@ export default function useResult() {
     isAcceptButtonDisabled,
     setIsAcceptButtonDisabled,
     isBkConsultAndNotOptimized,
+    canShowMap,
   };
 }
