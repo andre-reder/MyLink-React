@@ -72,6 +72,7 @@ export default function Result() {
     setIsAcceptButtonDisabled,
     isBkConsultAndNotOptimized,
     canShowMap,
+    isTicketsTabVisible,
   } = useResult();
 
   const [width, setWidth] = useState(window.innerWidth);
@@ -115,6 +116,7 @@ export default function Result() {
             tickets={tickets}
             view={view}
             logo={logo}
+            isTicketsTabVisible={isTicketsTabVisible}
           />
 
           <Display>

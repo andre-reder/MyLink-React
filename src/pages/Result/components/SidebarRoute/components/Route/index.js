@@ -1,15 +1,15 @@
 /* eslint-disable max-len */
 import PropTypes, { shape } from 'prop-types';
-import walk from '../../../../../../assets/images/icons/walk.svg';
 import bus from '../../../../../../assets/images/icons/bus.svg';
-import train from '../../../../../../assets/images/icons/train.svg';
-import subway from '../../../../../../assets/images/icons/subway.svg';
 import ferry from '../../../../../../assets/images/icons/ferry.svg';
+import subway from '../../../../../../assets/images/icons/subway.svg';
+import train from '../../../../../../assets/images/icons/train.svg';
+import walk from '../../../../../../assets/images/icons/walk.svg';
+import OpacityAnimation from '../../../../../../components/OpacityAnimation';
+import formatCurrency from '../../../../../../utils/formatCurrency';
 import {
   Container, Distance, DistanceTime, IconContainer, InstructionGroup, Instructions, Price, StepDescription, StepTitle, TicketDescription, TicketGroup, TicketInfo, TicketTotal, Time, Title, TotalContainer,
 } from './styles';
-import formatCurrency from '../../../../../../utils/formatCurrency';
-import OpacityAnimation from '../../../../../../components/OpacityAnimation';
 
 export default function Route({
   goingRoute,
@@ -58,10 +58,11 @@ export default function Route({
                     : (
                       <>
                         <div className="transport">
-                          {`${routeData.operadora} ${routeData.letreiroTransporte}`}
+                          {`${routeData.operadora ?? ''} ${routeData.letreiroTransporte}`}
                         </div>
                         <div>
-                          {`Em ${routeData.embarque} e viaje até ${routeData.desembarque}`}
+                          {routeData.embarque ? `Em ${routeData.embarque}` : ''}
+                          {routeData.desembarque ? ` e viaje até ${routeData.desembarque}` : ''}
                         </div>
                       </>
                     )}
@@ -105,10 +106,11 @@ export default function Route({
                   : (
                     <>
                       <div className="transport">
-                        {`${routeData.operadora} ${routeData.letreiroTransporte}`}
+                        {`${routeData.operadora ?? ''} ${routeData.letreiroTransporte}`}
                       </div>
                       <div>
-                        {`Em ${routeData.embarque} e viaje até ${routeData.desembarque}`}
+                        {routeData.embarque ? `Em ${routeData.embarque}` : ''}
+                        {routeData.desembarque ? ` e viaje até ${routeData.desembarque}` : ''}
                       </div>
                     </>
                   )}

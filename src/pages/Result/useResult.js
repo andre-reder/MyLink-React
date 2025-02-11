@@ -25,6 +25,7 @@ export default function useResult() {
   const [totalPrice, setTotalPrice] = useState('');
   const [resultStatus, setResultStatus] = useState('waiting');
   const [allowPdfDownload, setAllowPdfDownload] = useState(true);
+  const [isTicketsTabVisible, setIsTicketsTabVisible] = useState(true);
 
   const [isSomeActionLoading, setIsSomeActionLoading] = useState(false);
   const [adjustmentReason, setAdjustmentReason] = useState('');
@@ -76,13 +77,16 @@ export default function useResult() {
         setIsBkConsultAndNotOptimized(true);
         return;
       }
+      if (result.dadosConsulta.statusRot === 69) {
+        setIsTicketsTabVisible(false);
+      }
       setTotalPrice(formatCurrency(result.dadosConsulta.valorVtTotal));
       setGoingRoute(result.trajetoIda);
       setReturningRoute(result.trajetoVolta);
       setTickets(result.valeTransp);
       setEmployeeCellphone(result.dadosFuncionario.celularFunc);
       setEmployeeName(result.dadosFuncionario.nome);
-      setCompanyName(result.dadosFuncionario.nomeEmp);
+      setCompanyName(result.nomeEmp);
       setAllowPdfDownload(result.ExibeCarta);
       const maxPriceAllowed = result.valorTeto;
       const hasExceededPrice = (
@@ -313,5 +317,6 @@ export default function useResult() {
     setIsAcceptButtonDisabled,
     isBkConsultAndNotOptimized,
     canShowMap,
+    isTicketsTabVisible,
   };
 }

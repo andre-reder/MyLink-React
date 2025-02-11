@@ -5,6 +5,7 @@ import { Container } from './styles';
 export default function Header({
   view,
   setView,
+  isTicketsTabVisible,
 }) {
   return (
     <Container>
@@ -14,9 +15,11 @@ export default function Header({
       <FilterRadioButton selected={view === 'returning'} onClick={() => setView('returning')}>
         Volta
       </FilterRadioButton>
-      <FilterRadioButton selected={view === 'tickets'} onClick={() => setView('tickets')}>
-        Bilhetes
-      </FilterRadioButton>
+      {isTicketsTabVisible && (
+        <FilterRadioButton selected={view === 'tickets'} onClick={() => setView('tickets')}>
+          Bilhetes
+        </FilterRadioButton>
+      )}
     </Container>
   );
 }
@@ -24,4 +27,9 @@ export default function Header({
 Header.propTypes = {
   view: PropTypes.string.isRequired,
   setView: PropTypes.func.isRequired,
+  isTicketsTabVisible: PropTypes.bool,
+};
+
+Header.defaultProps = {
+  isTicketsTabVisible: true,
 };

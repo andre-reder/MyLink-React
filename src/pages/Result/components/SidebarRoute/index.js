@@ -1,12 +1,12 @@
-import Offcanvas from 'react-bootstrap/Offcanvas';
 import PropTypes, { shape } from 'prop-types';
-import { useState, useEffect } from 'react';
-import { Container, LogoContainer, OffcanvasStyle } from './styles';
+import { useEffect, useState } from 'react';
+import Offcanvas from 'react-bootstrap/Offcanvas';
 import menu from '../../../../assets/images/icons/menu.svg';
+import { Container, LogoContainer, OffcanvasStyle } from './styles';
 
 import captaLogo from '../../../../assets/images/captaLogo.svg';
-import Route from './components/Route';
 import Header from './components/Header';
+import Route from './components/Route';
 
 export default function SidebarRoute({
   setView,
@@ -15,6 +15,7 @@ export default function SidebarRoute({
   tickets,
   view,
   logo,
+  isTicketsTabVisible,
 }) {
   const [show, setShow] = useState(false);
   const [width, setWidth] = useState(window.innerWidth);
@@ -38,7 +39,7 @@ export default function SidebarRoute({
             <img src={logoSrc} alt="logo" />
           </LogoContainer>
 
-          <Header setView={setView} view={view} />
+          <Header setView={setView} view={view} isTicketsTabVisible={isTicketsTabVisible} />
           <Route
             goingRoute={goingRoute}
             returningRoute={returningRoute}
@@ -80,8 +81,10 @@ SidebarRoute.propTypes = {
   tickets: PropTypes.arrayOf(shape()).isRequired,
   view: PropTypes.string.isRequired,
   logo: PropTypes.string,
+  isTicketsTabVisible: PropTypes.bool,
 };
 
 SidebarRoute.defaultProps = {
   logo: false,
+  isTicketsTabVisible: true,
 };
