@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export default styled.button`
-  height: ${({ small }) => (small ? '36px' : '40px')};
+  height: ${({ small, customHeight }) => (customHeight || (small ? '36px' : '40px'))};
   max-width: 150px;
   min-width: 120px;
   padding: ${({ small }) => (small ? '0 8px' : '0 12px')};
@@ -14,9 +14,10 @@ export default styled.button`
   border-radius: 8px;
   transition: all 0.2s ease-in;
 
+
   @media(max-width: 800px){
     width: 110px;
-    height: 36px;
+    height: ${({ customHeight }) => (customHeight || '36px')};
     padding: 0 2px;
     font-size: 14px;
   }

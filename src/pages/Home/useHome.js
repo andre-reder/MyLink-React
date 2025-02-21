@@ -39,7 +39,7 @@ export default function useHome() {
   const [isHighSalary, setIsHighSalary] = useState(false);
 
   const [consultCode, setConsultCode] = useState('');
-  const [, setEmployeeCode] = useState('');
+  const [employeeCodeSt, setEmployeeCode] = useState('');
 
   const [workplaces, setWorkplaces] = useState([]);
   const [selectedWorkplace, setSelectedWorkplace] = useState({});
@@ -60,6 +60,9 @@ export default function useHome() {
 
   const [sentEmail, setSentEmail] = useState(false);
   const [sentWhatsapp, setSentWhatsapp] = useState(false);
+
+  const [isMyLinkFull] = useState(true);
+  const [linkToResult, setLinkToResult] = useState('');
 
   const workplacesOptions = useMemo(() => {
     if (workplaces.length === 0) return [];
@@ -386,6 +389,10 @@ export default function useHome() {
 
   const checkResultStatus = useCallback(async (consult, employee) => {
     try {
+      if (errorAtResultGeneration || consultExpired) {
+        clearInterval(intervalId);
+        return;
+      }
       const status = await homeService.checkResulStatus({
         codConsulta: consult,
         token,
@@ -393,6 +400,7 @@ export default function useHome() {
       if (!status.codigo) {
         toast.info(`Não conseguimos recuperar o status de processamento da sua consulta (${status.msg})`);
       }
+      // console.log(status);
       const statusMapActions = {
         0: () => toast.update(toastStatusId.current, {
           render: 'Sua consulta foi gerada e está aguardando seu processamento ser iniciado',
@@ -411,9 +419,15 @@ export default function useHome() {
           navigate(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`);
         },
         3: () => {
+          // console.log('ACIONOU O 3');
           setErrorAtResultGeneration(true);
           clearInterval(intervalId);
           toast.dismiss(toastStatusId.current);
+          setLinkToResult(`/resultado?codFuncionario=${employee}&codConsulta=${consult}&logo=${logoSrc || false}`);
+
+          if (isMyLinkFull) {
+            toast.warn('Não conseguimos encontrar nenhuma opção de vale-transporte para a sua região. Por favor, insira os bilhetes que você utiliza, na ordem correta, para que seja possível prosseguir com a roteirização.', { toastId: 'noVtOptions', autoClose: false });
+          }
         },
         4: () => {
           setConsultExpired(true);
@@ -425,7 +439,7 @@ export default function useHome() {
     } catch (error) {
       toast.error(`Não conseguimos checar o status de processamento do seu resultado (${error})`);
     }
-  }, [intervalId, logoSrc, navigate, token]);
+  }, [consultExpired, errorAtResultGeneration, intervalId, isMyLinkFull, logoSrc, navigate, token]);
 
   const startResultStatusInterval = useCallback((consult, employee) => {
     checkResultStatus(consult, employee);
@@ -485,7 +499,7 @@ export default function useHome() {
       const hasBeenSentSuccessfully = bodySentToCalculate.codigo;
       if (!hasBeenSentSuccessfully) {
         toast.error(`Houve um erro ao enviar seus dados para roteirização. Por favor, tente novamente ${bodySentToCalculate.msg}`);
-        prevStep();
+        // prevStep();
         return;
       }
 
@@ -599,5 +613,10 @@ export default function useHome() {
     handleCellphoneChange,
     sentEmail,
     sentWhatsapp,
+    isMyLinkFull,
+    linkToResult,
+    setIsLoading,
+    employeeCodeSt,
+    fullWorkplaces: workplaces,
   };
 }

@@ -1,5 +1,5 @@
-import HttpClient from './utils/HttpClient';
 import { pathName } from '../pathName';
+import HttpClient from './utils/HttpClient';
 
 class HomeService {
   constructor() {
@@ -69,6 +69,28 @@ class HomeService {
       path: `/RTL_ArquivosDocs?codFuncionario=${codFuncionario}&TipoArquivo=6`,
       contentType: 'multipart/form-data',
       reqBody,
+    });
+  }
+
+  async getItensAndFiltersList({
+    token,
+    ufRes,
+    ufLT,
+  }) {
+    return this.httpClient.get({
+      path: `/RTL_Bilhetes?appCode=2&ufRes=${ufRes}&ufLT=${ufLT}`,
+      authorization: token,
+    });
+  }
+
+  async confirmManualRouting({
+    token,
+    reqBody,
+  }) {
+    return this.httpClient.post({
+      path: '/RTL_Bilhetes',
+      reqBody,
+      authorization: token,
     });
   }
 }

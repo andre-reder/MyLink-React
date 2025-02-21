@@ -13,7 +13,7 @@
     "react-iframe": "^1.8.5",
     "react-router-dom": "6.6.2",
     "react-scripts": "5.0.1",
-    "react-select": "^5.7.0",
+    "react-select": "^5.10.0",
     "react-signature-canvas": "^1.0.6",
     "react-toastify": "^9.1.1",
     "styled-components": "^5.3.6"

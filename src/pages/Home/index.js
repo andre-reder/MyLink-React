@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 // import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
 import { ButtonsContainer, Container, FormCard } from './styles';
 
 import Button from '../../components/Button';
@@ -11,6 +12,7 @@ import AddressCard from './components/AddressCard';
 import CompanySelectionCard from './components/CompanySelectionCard';
 import Header from './components/Header';
 import HighSalaryCard from './components/HighSalaryCard';
+import ManualRouting from './components/ManualRouting';
 import PersonalInfoCard from './components/PersonalInfoCard';
 import ProgressSteps from './components/ProgressSteps';
 import WaitingCard from './components/WaitingCard';
@@ -43,6 +45,7 @@ export default function Home() {
     canAdvanceStep,
     isGettinCepData,
     isLoading,
+    // setIsLoading,
     companyNotAllowed,
     logoSrc,
     workplaces,
@@ -71,6 +74,10 @@ export default function Home() {
     handleCellphoneChange,
     sentEmail,
     sentWhatsapp,
+    isMyLinkFull,
+    linkToResult,
+    employeeCodeSt,
+    fullWorkplaces,
   } = useHome();
 
   const hasWorkplaces = workplaces.length !== 0 && !isLoading;
@@ -83,7 +90,8 @@ export default function Home() {
 
   const unexpectedError = hasError && !isLoading && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && !consultExpired;
 
-  const resultNotFound = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && errorAtResultGeneration && !consultExpired;
+  const resultNotFound = useMemo(() => (!isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && errorAtResultGeneration && !consultExpired), [companyNotAllowed, consultExpired, errorAtResultGeneration, hasCodEmpresaQuery, hasError, hasWorkplaces, isLoading]);
+  // const resultNotFound = true;
 
   const consultExpire = !isLoading && !hasError && !companyNotAllowed && hasCodEmpresaQuery && hasWorkplaces && !errorAtResultGeneration && consultExpired;
 
@@ -249,6 +257,18 @@ export default function Home() {
             )}
           </>
         )}
+
+        {resultNotFound && isMyLinkFull && (
+          <ManualRouting
+            linkToResult={linkToResult}
+            ufRes={uf}
+            ufLT={fullWorkplaces.find((x) => x.value === selectedWorkplace.value).uf}
+            // setIsLoading={setIsLoading}
+            consultCode={Number(consultCode)}
+            employeeCode={Number(employeeCodeSt)}
+            companyCode={Number(codEmpresa)}
+          />
+        )}
       </Container>
 
       {companyNotAllowed && !isLoading && hasCodEmpresaQuery && !errorAtResultGeneration && !consultExpired && (
@@ -298,7 +318,8 @@ export default function Home() {
         />
       )}
 
-      {resultNotFound && (
+      {resultNotFound && !isMyLinkFull && (
+        // eslint-disable-next-line react/jsx-no-useless-fragment
         <NoData
           icon="sad"
           label={(
@@ -307,30 +328,30 @@ export default function Home() {
               Se acaso não receber, envie uma mensagem para nosso
               <a href="https://wa.me/5511932323875?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
               {/* {codEmpresa == 30131 ? (
-                <>
-                  Não conseguimos encontrar um resultado, mas não se preocupe! Você pode baixar a carta de opção de VT fora da abrangência e preencher com as informações necessárias para enviar ao RH da sua empresa.
-                  <br />
+                      <>
+                        Não conseguimos encontrar um resultado, mas não se preocupe! Você pode baixar a carta de opção de VT fora da abrangência e preencher com as informações necessárias para enviar ao RH da sua empresa.
+                        <br />
 
-                  <strong>Dica:</strong>
-                  {' '}
-                  Antes de enviar a carta, baixe e salve-a em seu smartphone ou computador e depois abra este documento para preencher e assinar pelo seu navegador ou pelo ADOBE ACROBAT!
-                  Isso é mais simples!
+                        <strong>Dica:</strong>
+                        {' '}
+                        Antes de enviar a carta, baixe e salve-a em seu smartphone ou computador e depois abra este documento para preencher e assinar pelo seu navegador ou pelo ADOBE ACROBAT!
+                        Isso é mais simples!
 
-                  <br />
+                        <br />
 
-                  <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
-                    Baixar Carta
-                  </Link>
-                </>
-              ) : (
-                <>
-                  Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
-                  Se acaso não receber, envie uma mensagem para nosso
-                  <a href="https://wa.me/5511932323875?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
-                </>
-              )} */}
+                        <Link to="/files/Modelo de Carta de Opcao de VT fora abrangencia - CAPTA MOBILIDADE.pdf" target="_blank" download>
+                          Baixar Carta
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        Não conseguimos encontrar um resultado, mas não se preocupe! Dentro das próximas 2 horas enviaremos um e-mail com o resultado para você!
+                        Se acaso não receber, envie uma mensagem para nosso
+                        <a href="https://wa.me/5511932323875?text=Ol%C3%A1%21+Tudo+bem%3F+Meu+resultado+do+My-Link+n%C3%A3o+apresentou+resultado+e+ainda+n%C3%A3o+tive+nenhum+retorno+por+e-mail"> WhatsApp </a>
+                      </>
+                    )} */}
             </div>
-)}
+      )}
         />
       )}
 
