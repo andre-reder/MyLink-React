@@ -61,7 +61,7 @@ export default function useHome() {
   const [sentEmail, setSentEmail] = useState(false);
   const [sentWhatsapp, setSentWhatsapp] = useState(false);
 
-  const [isMyLinkFull] = useState(true);
+  const [isMyLinkFull, setIsMyLinkFull] = useState(true);
   const [linkToResult, setLinkToResult] = useState('');
 
   const workplacesOptions = useMemo(() => {
@@ -352,6 +352,7 @@ export default function useHome() {
       if (isCompanyHabilitated.trocaLogo) {
         setLogoSrc(isCompanyHabilitated.linkLogo);
       }
+      setIsMyLinkFull(isCompanyHabilitated.usaMyLinkFull);
       setCompanyNotAllowed(false);
       toast.success('Olá! Seja bem-vindo ao My-Link. Aqui você realizará sua roteirização de Vale Transporte.', {
         icon: '👋',
