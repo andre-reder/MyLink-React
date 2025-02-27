@@ -67,16 +67,17 @@ export default function useHome() {
   const workplacesOptions = useMemo(() => {
     if (workplaces.length === 0) return [];
 
-    const exceptions = ['GO', 'DF'];
-    const isCepFromSomeException = exceptions.some((exception) => exception === uf);
+    const exceptions = [['GO', 'DF'], ['MA', 'PI'], ['PE', 'BA']];
+    const exceptioGroupOFUf = exceptions.find((exception) => exception.includes(uf));
 
     const filteredWorkplaces = workplaces.filter((wp) => {
       if (!uf) return true;
 
-      if (!isCepFromSomeException) {
+      if (!exceptioGroupOFUf) {
         return wp.uf === uf;
       }
-      return exceptions.includes(wp.uf);
+
+      return exceptioGroupOFUf.includes(wp.uf);
     });
 
     if (filteredWorkplaces.length === 0 && !!uf) {
